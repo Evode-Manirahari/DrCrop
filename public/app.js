@@ -347,9 +347,14 @@ async function submitObservation(event) {
       body: JSON.stringify(payload)
     });
     state.selectedObservationId = result.observation.id;
-    els.memoryOutput.textContent = result.gbrain?.ok
-      ? `Wrote ${result.gbrain.observationSlug} to GBrain.\n${result.gbrain.operations.map((op) => `${op.ok ? "ok" : "fail"} ${op.command}`).join("\n")}`
-      : `Observation saved locally. GBrain note: ${(result.gbrain?.errors || ["not available"]).join("\n")}`;
+    if (result.gbrain?.queued) {
+      els.memoryOutput.textContent = `Observation saved. GBrain write queued in background (id: ${result.gbrain.observationId}).`;
+      pollGBrainStatus(result.gbrain.observationId);
+    } else if (result.gbrain?.ok) {
+      els.memoryOutput.textContent = `Wrote ${result.gbrain.observationSlug} to GBrain.\n${(result.gbrain.operations || []).map((op) => `${op.ok ? "ok" : "fail"} ${op.command}`).join("\n")}`;
+    } else {
+      els.memoryOutput.textContent = `Observation saved locally. GBrain note: ${(result.gbrain?.errors || ["not available"]).join("\n")}`;
+    }
     if (result.retrieval) {
       const retrievalLine = result.retrieval.ok
         ? `\n\nZeroEntropy reranked ${result.retrieval.results.length} memories with ${result.retrieval.model}.`
@@ -415,6 +420,29 @@ async function generateBriefing() {
     els.briefingButton.disabled = false;
     els.briefingButton.textContent = "Generate briefing";
     els.briefingPanel?.removeAttribute("data-thinking");
+  }
+}
+
+async function pollGBrainStatus(observationId, attempts = 0) {
+  if (attempts > 30) return;
+  try {
+    const result = await fetchJson("/api/gbrain/recent");
+    const entry = (result.entries || []).find((item) => item.observationId === observationId);
+    if (!entry) {
+      setTimeout(() => pollGBrainStatus(observationId, attempts + 1), 2000);
+      return;
+    }
+    if (entry.status === "in_progress") {
+      els.memoryOutput.textContent = `GBrain write in progress for ${observationId}.\n${(entry.operations || []).slice(-3).map((op) => `${op.ok ? "ok" : "fail"} ${op.command}`).join("\n")}`;
+      setTimeout(() => pollGBrainStatus(observationId, attempts + 1), 2000);
+      return;
+    }
+    const lines = (entry.operations || []).map((op) => `${op.ok ? "ok" : "fail"} ${op.command}`).join("\n");
+    els.memoryOutput.textContent = entry.status === "complete"
+      ? `GBrain write complete for ${observationId}.\n${lines}`
+      : `GBrain write finished with errors for ${observationId}.\n${(entry.errors || []).join("\n")}\n${lines}`;
+  } catch (error) {
+    // silent — UX shouldn't break if status polling fails
   }
 }
 

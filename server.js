@@ -149,14 +149,14 @@ async function createObservation(payload) {
   const previous = await loadObservations();
   const analysis = buildActionPlan(observation, [...previous, observation], fields, { totalAcres: farm.totalAcres });
   const observations = await appendObservation(observation);
-  const [retrieval, gbrain] = await Promise.all([
-    zeroEntropy.rerankObservationMemory(
-      `${observation.crop} ${observation.issue} ${observation.symptoms}`,
-      previous,
-      { topN: 4, timeoutMs: 4500 }
-    ),
-    recordObservation(observation, analysis)
-  ]);
+
+  const retrieval = await zeroEntropy.rerankObservationMemory(
+    `${observation.crop} ${observation.issue} ${observation.symptoms}`,
+    previous,
+    { topN: 4, timeoutMs: 4500 }
+  );
+
+  trackGBrainWrite(observation, analysis);
 
   return {
     observation: {
@@ -165,9 +165,36 @@ async function createObservation(payload) {
     },
     summary: summarizeFarm(observations, fields, farm.totalAcres),
     graph: buildGraph(observations, fields),
-    gbrain,
+    gbrain: { enabled: true, queued: true, observationId: observation.id, message: "GBrain write queued in background." },
     retrieval
   };
+}
+
+const gbrainQueue = new Map();
+
+function trackGBrainWrite(observation, analysis) {
+  if (process.env.DRCROP_GBRAIN === "0") return;
+  const entry = {
+    observationId: observation.id,
+    startedAt: new Date().toISOString(),
+    status: "in_progress",
+    operations: [],
+    errors: []
+  };
+  gbrainQueue.set(observation.id, entry);
+  Promise.resolve()
+    .then(() => recordObservation(observation, analysis))
+    .then((result) => {
+      entry.status = result.ok ? "complete" : "failed";
+      entry.operations = result.operations || [];
+      entry.errors = result.errors || [];
+      entry.finishedAt = new Date().toISOString();
+    })
+    .catch((error) => {
+      entry.status = "failed";
+      entry.errors = [error?.message || String(error)];
+      entry.finishedAt = new Date().toISOString();
+    });
 }
 
 async function updateObservationStatus(id, status) {
@@ -216,6 +243,14 @@ async function handleApi(req, res, url) {
     const observation = await updateObservationStatus(id, payload.status);
     if (!observation) sendError(res, 404, "Observation not found");
     else sendJson(res, 200, { observation });
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/gbrain/recent") {
+    const recent = [...gbrainQueue.values()]
+      .sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))
+      .slice(0, 8);
+    sendJson(res, 200, { entries: recent });
     return true;
   }
 
