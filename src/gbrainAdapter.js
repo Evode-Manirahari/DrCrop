@@ -32,10 +32,18 @@ function slugify(value) {
     .slice(0, 80);
 }
 
+function putArgs(slug, content) {
+  return ["put", slug, "--content", content];
+}
+
+function linkArgs(from, to, type) {
+  return ["link", from, to, "--link-type", type];
+}
+
 function runGBrain(args, input, timeoutMs = 2600) {
   return new Promise((resolve) => {
     const child = spawn("gbrain", args, {
-      stdio: ["pipe", "pipe", "pipe"],
+      stdio: [input ? "pipe" : "ignore", "pipe", "pipe"],
       env: {
         ...process.env,
         CODEX_SANDBOX_NETWORK_DISABLED: process.env.CODEX_SANDBOX_NETWORK_DISABLED || "1"
@@ -79,7 +87,7 @@ function runGBrain(args, input, timeoutMs = 2600) {
         resolve({ ok: code === 0, code, args, stdout, stderr });
       }
     });
-    child.stdin.end(input || "");
+    if (input) child.stdin.end(input);
   });
 }
 
@@ -173,8 +181,8 @@ async function recordObservation(observation, analysis) {
   }
 
   for (const [slug, content] of pages) {
-    const result = await runGBrain(["put", slug], content);
-    operations.push({ command: `gbrain put ${slug}`, ok: result.ok, timedOut: result.timedOut || false });
+    const result = await runGBrain(putArgs(slug, content));
+    operations.push({ command: `gbrain put ${slug} --content <markdown>`, ok: result.ok, timedOut: result.timedOut || false });
     if (!result.ok) errors.push(result.error || result.stderr || `failed to put ${slug}`);
   }
 
@@ -189,8 +197,8 @@ async function recordObservation(observation, analysis) {
   }
 
   for (const [from, to, type] of links) {
-    const result = await runGBrain(["link", from, to, "--type", type], "");
-    operations.push({ command: `gbrain link ${from} ${to} --type ${type}`, ok: result.ok, timedOut: result.timedOut || false });
+    const result = await runGBrain(linkArgs(from, to, type));
+    operations.push({ command: `gbrain link ${from} ${to} --link-type ${type}`, ok: result.ok, timedOut: result.timedOut || false });
     if (!result.ok) errors.push(result.error || result.stderr || `failed to link ${from} -> ${to}`);
   }
 
@@ -207,7 +215,7 @@ async function recordObservation(observation, analysis) {
 async function searchMemory(query) {
   const status = hasGBrain();
   if (!status.available) return { ok: false, error: status.error || "gbrain CLI unavailable" };
-  const result = await runGBrain(["search", query], "", 3000);
+  const result = await runGBrain(["search", query], null, 3000);
   return {
     ok: result.ok,
     stdout: result.stdout,
@@ -221,5 +229,7 @@ module.exports = {
   hasGBrain,
   recordObservation,
   searchMemory,
+  putArgs,
+  linkArgs,
   slugify
 };
