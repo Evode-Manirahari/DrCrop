@@ -15,6 +15,10 @@ const els = {
   farmLocation: document.getElementById("farmLocation"),
   gbrainStatus: document.getElementById("gbrainStatus"),
   retrievalStatus: document.getElementById("retrievalStatus"),
+  agronomistStatus: document.getElementById("agronomistStatus"),
+  briefingButton: document.getElementById("briefingButton"),
+  briefingText: document.getElementById("briefingText"),
+  briefingMeta: document.getElementById("briefingMeta"),
   fieldMap: document.getElementById("fieldMap"),
   fieldId: document.getElementById("fieldId"),
   zoneName: document.getElementById("zoneName"),
@@ -30,6 +34,7 @@ const els = {
   graphView: document.getElementById("graphView"),
   timeline: document.getElementById("timeline"),
   refreshButton: document.getElementById("refreshButton"),
+  resetDemoButton: document.getElementById("resetDemoButton"),
   memorySearch: document.getElementById("memorySearch"),
   memoryQuery: document.getElementById("memoryQuery"),
   memoryOutput: document.getElementById("memoryOutput")
@@ -72,11 +77,11 @@ async function loadState() {
   if (!state.selectedObservationId) {
     state.selectedObservationId = payload.summary.latestObservationId;
   }
-  renderAll(payload.gbrain, payload.zeroEntropy);
+  renderAll(payload.gbrain, payload.zeroEntropy, payload.agronomist);
 }
 
-function renderAll(gbrain, zeroEntropy) {
-  renderFarm(gbrain, zeroEntropy);
+function renderAll(gbrain, zeroEntropy, agronomist) {
+  renderFarm(gbrain, zeroEntropy, agronomist);
   renderMetrics();
   renderFieldControls();
   renderMap();
@@ -85,15 +90,21 @@ function renderAll(gbrain, zeroEntropy) {
   renderTimeline();
 }
 
-function renderFarm(gbrain, zeroEntropy) {
+function renderFarm(gbrain, zeroEntropy, agronomist) {
   els.farmName.textContent = state.farm?.farmName || "Farm memory";
   els.farmLocation.textContent = state.farm?.location || "Unknown location";
-  els.gbrainStatus.textContent = gbrain?.available ? `GBrain ${gbrain.version}` : "GBrain offline";
+  els.gbrainStatus.textContent = gbrain?.available ? `GBrain ${gbrain.version}` : gbrain?.disabled ? "GBrain disabled" : "GBrain offline";
   els.gbrainStatus.classList.toggle("good", Boolean(gbrain?.available));
-  els.gbrainStatus.classList.toggle("bad", !gbrain?.available);
+  els.gbrainStatus.classList.toggle("bad", !gbrain?.available && !gbrain?.disabled);
+  els.gbrainStatus.classList.toggle("muted", Boolean(gbrain?.disabled));
   els.retrievalStatus.textContent = zeroEntropy?.configured ? `ZeroEntropy ${zeroEntropy.model}` : "ZeroEntropy key needed";
   els.retrievalStatus.classList.toggle("good", Boolean(zeroEntropy?.configured));
   els.retrievalStatus.classList.toggle("bad", !zeroEntropy?.configured);
+  if (els.agronomistStatus) {
+    els.agronomistStatus.textContent = agronomist?.configured ? `Claude ${agronomist.model}` : "Claude key needed";
+    els.agronomistStatus.classList.toggle("good", Boolean(agronomist?.configured));
+    els.agronomistStatus.classList.toggle("bad", !agronomist?.configured);
+  }
 }
 
 function renderMetrics() {
@@ -185,10 +196,19 @@ function selectedObservation() {
   );
 }
 
+function resetBriefingForObservation(observation) {
+  if (!els.briefingText || !observation) return;
+  if (els.briefingText.dataset.observationId === observation.id) return;
+  els.briefingText.dataset.observationId = observation.id;
+  els.briefingText.textContent = "Generate a farmer-ready briefing grounded in this observation, the memory graph, and the action plan.";
+  els.briefingMeta.textContent = "";
+}
+
 function renderPlan() {
   const observation = selectedObservation();
   if (!observation) return;
   const analysis = observation.analysis;
+  resetBriefingForObservation(observation);
   els.planTitle.textContent = `${observation.fieldName}: ${observation.issue}`;
   els.planHeadline.textContent = analysis.headline;
   els.riskBadge.textContent = analysis.riskLevel;
@@ -272,6 +292,22 @@ async function markContained(id) {
   await loadState();
 }
 
+async function resetDemo() {
+  els.resetDemoButton.disabled = true;
+  els.resetDemoButton.textContent = "Resetting";
+  try {
+    await fetchJson("/api/demo/reset", { method: "POST", body: "{}" });
+    state.selectedObservationId = null;
+    els.memoryOutput.textContent = "Demo memory reset to the seed Sonoma scenario.";
+    await loadState();
+  } catch (error) {
+    els.memoryOutput.textContent = `Reset failed: ${error.message}`;
+  } finally {
+    els.resetDemoButton.disabled = false;
+    els.resetDemoButton.textContent = "Reset";
+  }
+}
+
 async function submitObservation(event) {
   event.preventDefault();
   els.submitButton.disabled = true;
@@ -297,6 +333,7 @@ async function submitObservation(event) {
       els.memoryOutput.textContent += retrievalLine;
     }
     await loadState();
+    void generateBriefing();
   } catch (error) {
     els.memoryOutput.textContent = error.message;
   } finally {
@@ -324,7 +361,38 @@ els.severity.addEventListener("input", () => {
 });
 els.form.addEventListener("submit", submitObservation);
 els.refreshButton.addEventListener("click", loadState);
+els.resetDemoButton?.addEventListener("click", resetDemo);
 els.memorySearch.addEventListener("submit", searchMemory);
+
+async function generateBriefing() {
+  const observation = selectedObservation();
+  if (!observation || !els.briefingButton) return;
+  els.briefingButton.disabled = true;
+  els.briefingButton.textContent = "Thinking";
+  els.briefingText.textContent = "Asking the agronomist to read the memory graph and write a briefing.";
+  els.briefingMeta.textContent = "";
+  try {
+    const result = await fetchJson("/api/agronomist/briefing", {
+      method: "POST",
+      body: JSON.stringify({ observationId: observation.id })
+    });
+    const briefing = result.briefing || {};
+    els.briefingText.dataset.observationId = observation.id;
+    els.briefingText.textContent = briefing.briefing || "No briefing returned.";
+    const tag = briefing.fallback
+      ? (briefing.configured ? `Fallback used: ${briefing.error || briefing.note || "Claude unavailable."}` : briefing.note || "Set ANTHROPIC_API_KEY to enable Claude.")
+      : `Generated by ${briefing.model}`;
+    els.briefingMeta.textContent = tag;
+  } catch (error) {
+    els.briefingText.textContent = `Briefing failed: ${error.message}`;
+    els.briefingMeta.textContent = "";
+  } finally {
+    els.briefingButton.disabled = false;
+    els.briefingButton.textContent = "Generate briefing";
+  }
+}
+
+els.briefingButton?.addEventListener("click", generateBriefing);
 
 loadState().catch((error) => {
   document.body.innerHTML = `<main class="shell"><section class="panel"><h1>DrCrop failed to load</h1><p>${error.message}</p></section></main>`;

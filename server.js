@@ -4,9 +4,10 @@ const path = require("path");
 const { URL } = require("url");
 
 const { buildActionPlan, buildGraph, summarizeFarm } = require("./src/riskEngine");
-const { appendObservation, loadFarm, loadObservations, saveObservations } = require("./src/storage");
+const { appendObservation, loadFarm, loadObservations, resetDemo, saveObservations } = require("./src/storage");
 const { hasGBrain, recordObservation, searchMemory } = require("./src/gbrainAdapter");
 const zeroEntropy = require("./src/zeroEntropyAdapter");
+const agronomistAgent = require("./src/agronomistAgent");
 
 const root = __dirname;
 const publicDir = path.join(root, "public");
@@ -44,7 +45,13 @@ async function readBody(req) {
       throw new Error("Request body too large");
     }
   }
-  return body ? JSON.parse(body) : {};
+  try {
+    return body ? JSON.parse(body) : {};
+  } catch {
+    const error = new Error("Invalid JSON body");
+    error.statusCode = 400;
+    throw error;
+  }
 }
 
 function cleanString(value, fallback = "") {
@@ -56,6 +63,12 @@ function clampNumber(value, min, max, fallback) {
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) return fallback;
   return Math.max(min, Math.min(max, parsed));
+}
+
+function routeError(message, statusCode = 422) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
 }
 
 async function getState() {
@@ -71,31 +84,60 @@ async function getState() {
     graph: buildGraph(observations, farm.fields),
     summary: summarizeFarm(observations, farm.fields, farm.totalAcres),
     gbrain: hasGBrain(),
-    zeroEntropy: zeroEntropy.status()
+    zeroEntropy: zeroEntropy.status(),
+    agronomist: agronomistAgent.status()
+  };
+}
+
+async function getHealth() {
+  const farm = await loadFarm();
+  const observations = await loadObservations();
+  const gbrain = hasGBrain();
+  const retrieval = zeroEntropy.status();
+  const agronomist = agronomistAgent.status();
+  const checks = {
+    dataLoaded: Boolean(farm.fields?.length && observations.length),
+    gbrainPathReady: Boolean(gbrain.available || gbrain.disabled),
+    retrievalPathReady: true,
+    agronomistPathReady: true
+  };
+  return {
+    ok: Object.values(checks).every(Boolean),
+    demoReady: Object.values(checks).every(Boolean),
+    checks,
+    farm: farm.farmName,
+    observations: observations.length,
+    gbrain,
+    zeroEntropy: retrieval,
+    agronomist
   };
 }
 
 async function createObservation(payload) {
   const farm = await loadFarm();
   const fields = farm.fields || [];
-  const field = fields.find((item) => item.id === payload.fieldId) || fields[0];
+  const field = fields.find((item) => item.id === payload.fieldId);
   if (!field) {
-    const error = new Error("No field is configured");
-    error.statusCode = 422;
-    throw error;
+    throw routeError("Choose a valid field before submitting the scout report.");
   }
 
   const reportedAt = payload.reportedAt ? new Date(payload.reportedAt) : new Date();
   const safeDate = Number.isFinite(reportedAt.getTime()) ? reportedAt : new Date();
   const issue = cleanString(payload.issue, "Unknown pest");
+  const symptoms = cleanString(payload.symptoms, "");
+  if (!symptoms || symptoms.length < 8) {
+    throw routeError("Add at least a short symptom note so the memory is useful.");
+  }
   const observation = {
     id: `obs-${safeDate.toISOString().replace(/[^0-9]/g, "").slice(0, 14)}-${field.id}-${issue.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "issue"}`,
     fieldId: field.id,
     fieldName: field.name,
-    zoneName: cleanString(payload.zoneName, field.scoutPriority || field.zones?.[0] || "reported zone"),
+    zoneName: field.zones?.includes(payload.zoneName)
+      ? payload.zoneName
+      : cleanString(payload.zoneName, field.scoutPriority || field.zones?.[0] || "reported zone"),
     crop: field.crop,
     issue,
-    symptoms: cleanString(payload.symptoms, "Scout report submitted without symptom detail."),
+    symptoms,
     severity: clampNumber(payload.severity, 1, 5, 3),
     acres: Number(clampNumber(payload.acres, 0.1, field.acres, 1).toFixed(1)),
     reportedAt: safeDate.toISOString(),
@@ -106,13 +148,15 @@ async function createObservation(payload) {
 
   const previous = await loadObservations();
   const analysis = buildActionPlan(observation, [...previous, observation], fields, { totalAcres: farm.totalAcres });
-  const retrieval = await zeroEntropy.rerankObservationMemory(
-    `${observation.crop} ${observation.issue} ${observation.symptoms}`,
-    previous,
-    { topN: 4, timeoutMs: 4500 }
-  );
   const observations = await appendObservation(observation);
-  const gbrain = await recordObservation(observation, analysis);
+  const [retrieval, gbrain] = await Promise.all([
+    zeroEntropy.rerankObservationMemory(
+      `${observation.crop} ${observation.issue} ${observation.symptoms}`,
+      previous,
+      { topN: 4, timeoutMs: 4500 }
+    ),
+    recordObservation(observation, analysis)
+  ]);
 
   return {
     observation: {
@@ -138,6 +182,11 @@ async function updateObservationStatus(id, status) {
 }
 
 async function handleApi(req, res, url) {
+  if (req.method === "GET" && url.pathname === "/api/health") {
+    sendJson(res, 200, await getHealth());
+    return true;
+  }
+
   if (req.method === "GET" && url.pathname === "/api/state") {
     sendJson(res, 200, await getState());
     return true;
@@ -146,6 +195,18 @@ async function handleApi(req, res, url) {
   if (req.method === "POST" && url.pathname === "/api/observations") {
     const payload = await readBody(req);
     sendJson(res, 201, await createObservation(payload));
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/demo/reset") {
+    const observations = await resetDemo();
+    const farm = await loadFarm();
+    sendJson(res, 200, {
+      ok: true,
+      observations,
+      graph: buildGraph(observations, farm.fields),
+      summary: summarizeFarm(observations, farm.fields, farm.totalAcres)
+    });
     return true;
   }
 
@@ -168,6 +229,36 @@ async function handleApi(req, res, url) {
     const query = url.searchParams.get("q") || "strawberry aphids nearby leaf curling";
     const observations = await loadObservations();
     sendJson(res, 200, await zeroEntropy.rerankObservationMemory(query, observations, { topN: 5 }));
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/agronomist/briefing") {
+    const payload = await readBody(req);
+    const farm = await loadFarm();
+    const observations = await loadObservations();
+    const targetId = payload.observationId;
+    const observation =
+      observations.find((item) => item.id === targetId) ||
+      [...observations].sort((a, b) => new Date(b.reportedAt) - new Date(a.reportedAt))[0];
+    if (!observation) {
+      sendError(res, 404, "No observation available to brief on.");
+      return true;
+    }
+    const analysis = buildActionPlan(observation, observations, farm.fields, { totalAcres: farm.totalAcres });
+    const retrieval = await zeroEntropy.rerankObservationMemory(
+      `${observation.crop} ${observation.issue} ${observation.symptoms}`,
+      observations.filter((item) => item.id !== observation.id),
+      { topN: 4, timeoutMs: 4500 }
+    );
+    const briefing = await agronomistAgent.generateBriefing(observation, analysis, retrieval, {
+      timeoutMs: Number(payload.timeoutMs) || 8000
+    });
+    sendJson(res, 200, {
+      observationId: observation.id,
+      analysis,
+      retrieval,
+      briefing
+    });
     return true;
   }
 
@@ -220,7 +311,9 @@ const server = http.createServer(async (req, res) => {
     }
     await serveStatic(req, res, url);
   } catch (error) {
-    sendError(res, error.statusCode || 500, error.message || "Server error", process.env.NODE_ENV === "production" ? undefined : error.stack);
+    const statusCode = error.statusCode || 500;
+    const details = statusCode >= 500 && process.env.NODE_ENV !== "production" ? error.stack : undefined;
+    sendError(res, statusCode, error.message || "Server error", details);
   }
 });
 

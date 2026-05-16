@@ -1,12 +1,22 @@
 const { spawn, spawnSync } = require("child_process");
 
 function hasGBrain() {
+  if (process.env.DRCROP_GBRAIN === "0") {
+    return {
+      available: false,
+      disabled: true,
+      version: null,
+      error: null
+    };
+  }
+
   const result = spawnSync("gbrain", ["version"], {
     encoding: "utf8",
     timeout: 1800
   });
   return {
     available: result.status === 0,
+    disabled: false,
     version: result.status === 0 ? result.stdout.trim() : null,
     error: result.error?.message || result.stderr?.trim() || null
   };
