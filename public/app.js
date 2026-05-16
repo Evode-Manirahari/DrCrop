@@ -34,6 +34,7 @@ const els = {
   graphView: document.getElementById("graphView"),
   timeline: document.getElementById("timeline"),
   refreshButton: document.getElementById("refreshButton"),
+  resetDemoButton: document.getElementById("resetDemoButton"),
   memorySearch: document.getElementById("memorySearch"),
   memoryQuery: document.getElementById("memoryQuery"),
   memoryOutput: document.getElementById("memoryOutput")
@@ -194,10 +195,19 @@ function selectedObservation() {
   );
 }
 
+function resetBriefingForObservation(observation) {
+  if (!els.briefingText || !observation) return;
+  if (els.briefingText.dataset.observationId === observation.id) return;
+  els.briefingText.dataset.observationId = observation.id;
+  els.briefingText.textContent = "Generate a farmer-ready briefing grounded in this observation, the memory graph, and the action plan.";
+  els.briefingMeta.textContent = "";
+}
+
 function renderPlan() {
   const observation = selectedObservation();
   if (!observation) return;
   const analysis = observation.analysis;
+  resetBriefingForObservation(observation);
   els.planTitle.textContent = `${observation.fieldName}: ${observation.issue}`;
   els.planHeadline.textContent = analysis.headline;
   els.riskBadge.textContent = analysis.riskLevel;
@@ -281,6 +291,22 @@ async function markContained(id) {
   await loadState();
 }
 
+async function resetDemo() {
+  els.resetDemoButton.disabled = true;
+  els.resetDemoButton.textContent = "Resetting";
+  try {
+    await fetchJson("/api/demo/reset", { method: "POST", body: "{}" });
+    state.selectedObservationId = null;
+    els.memoryOutput.textContent = "Demo memory reset to the seed Sonoma scenario.";
+    await loadState();
+  } catch (error) {
+    els.memoryOutput.textContent = `Reset failed: ${error.message}`;
+  } finally {
+    els.resetDemoButton.disabled = false;
+    els.resetDemoButton.textContent = "Reset";
+  }
+}
+
 async function submitObservation(event) {
   event.preventDefault();
   els.submitButton.disabled = true;
@@ -306,6 +332,7 @@ async function submitObservation(event) {
       els.memoryOutput.textContent += retrievalLine;
     }
     await loadState();
+    void generateBriefing();
   } catch (error) {
     els.memoryOutput.textContent = error.message;
   } finally {
@@ -333,11 +360,12 @@ els.severity.addEventListener("input", () => {
 });
 els.form.addEventListener("submit", submitObservation);
 els.refreshButton.addEventListener("click", loadState);
+els.resetDemoButton?.addEventListener("click", resetDemo);
 els.memorySearch.addEventListener("submit", searchMemory);
 
 async function generateBriefing() {
   const observation = selectedObservation();
-  if (!observation) return;
+  if (!observation || !els.briefingButton) return;
   els.briefingButton.disabled = true;
   els.briefingButton.textContent = "Thinking";
   els.briefingText.textContent = "Asking the agronomist to read the memory graph and write a briefing.";
@@ -348,6 +376,7 @@ async function generateBriefing() {
       body: JSON.stringify({ observationId: observation.id })
     });
     const briefing = result.briefing || {};
+    els.briefingText.dataset.observationId = observation.id;
     els.briefingText.textContent = briefing.briefing || "No briefing returned.";
     const tag = briefing.fallback
       ? (briefing.configured ? `Fallback used: ${briefing.error || briefing.note || "Claude unavailable."}` : briefing.note || "Set ANTHROPIC_API_KEY to enable Claude.")
