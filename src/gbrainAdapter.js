@@ -1,5 +1,7 @@
 const { spawn, spawnSync } = require("child_process");
 
+const gbrainTimeoutMs = Number(process.env.DRCROP_GBRAIN_TIMEOUT_MS || 8000);
+
 function hasGBrain() {
   if (process.env.DRCROP_GBRAIN === "0") {
     return {
@@ -40,7 +42,16 @@ function linkArgs(from, to, type) {
   return ["link", from, to, "--link-type", type];
 }
 
-function runGBrain(args, input, timeoutMs = 2600) {
+function displayArgs(args) {
+  const safe = [];
+  for (let index = 0; index < args.length; index += 1) {
+    safe.push(args[index] === "--content" ? "--content <markdown>" : args[index]);
+    if (args[index] === "--content") index += 1;
+  }
+  return safe.join(" ");
+}
+
+function runGBrain(args, input, timeoutMs = gbrainTimeoutMs) {
   return new Promise((resolve) => {
     const child = spawn("gbrain", args, {
       stdio: [input ? "pipe" : "ignore", "pipe", "pipe"],
@@ -62,7 +73,7 @@ function runGBrain(args, input, timeoutMs = 2600) {
           stdout,
           stderr,
           timedOut: true,
-          error: `gbrain ${args.join(" ")} timed out after ${timeoutMs}ms`
+          error: `gbrain ${displayArgs(args)} timed out after ${timeoutMs}ms`
         });
       }
     }, timeoutMs);
