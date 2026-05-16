@@ -97,7 +97,7 @@ async function getHealth() {
   const agronomist = agronomistAgent.status();
   const checks = {
     dataLoaded: Boolean(farm.fields?.length && observations.length),
-    gbrainAvailable: Boolean(gbrain.available),
+    gbrainPathReady: Boolean(gbrain.available || gbrain.disabled),
     retrievalPathReady: true,
     agronomistPathReady: true
   };

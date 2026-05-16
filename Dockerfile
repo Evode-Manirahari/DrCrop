@@ -2,13 +2,14 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm install --omit=dev --no-audit --no-fund || true
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 
 COPY . .
 
 ENV NODE_ENV=production
 ENV PORT=8080
+ENV DRCROP_GBRAIN=0
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=4s --start-period=10s --retries=3 \

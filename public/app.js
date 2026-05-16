@@ -93,9 +93,10 @@ function renderAll(gbrain, zeroEntropy, agronomist) {
 function renderFarm(gbrain, zeroEntropy, agronomist) {
   els.farmName.textContent = state.farm?.farmName || "Farm memory";
   els.farmLocation.textContent = state.farm?.location || "Unknown location";
-  els.gbrainStatus.textContent = gbrain?.available ? `GBrain ${gbrain.version}` : "GBrain offline";
+  els.gbrainStatus.textContent = gbrain?.available ? `GBrain ${gbrain.version}` : gbrain?.disabled ? "GBrain disabled" : "GBrain offline";
   els.gbrainStatus.classList.toggle("good", Boolean(gbrain?.available));
-  els.gbrainStatus.classList.toggle("bad", !gbrain?.available);
+  els.gbrainStatus.classList.toggle("bad", !gbrain?.available && !gbrain?.disabled);
+  els.gbrainStatus.classList.toggle("muted", Boolean(gbrain?.disabled));
   els.retrievalStatus.textContent = zeroEntropy?.configured ? `ZeroEntropy ${zeroEntropy.model}` : "ZeroEntropy key needed";
   els.retrievalStatus.classList.toggle("good", Boolean(zeroEntropy?.configured));
   els.retrievalStatus.classList.toggle("bad", !zeroEntropy?.configured);

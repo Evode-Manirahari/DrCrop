@@ -7,6 +7,7 @@ primary_region = "sjc"
   PORT = "8080"
   DRCROP_GBRAIN = "0"
   DRCROP_AGRONOMIST_MODEL = "claude-sonnet-4-6"
+  ZEROENTROPY_RERANK_MODEL = "zerank-2"
 
 [http_service]
   internal_port = 8080
@@ -22,7 +23,7 @@ primary_region = "sjc"
     hard_limit = 120
 
 [[http_service.checks]]
-  grace_period = "10s"
+  grace_period = "15s"
   interval = "30s"
   method = "get"
   timeout = "5s"
