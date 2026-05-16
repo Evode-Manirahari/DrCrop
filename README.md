@@ -11,7 +11,7 @@ The demo story is the Sonoma strawberry grower problem: if aphids appear in one 
 - Targeted plan showing confidence, biological-first recommendations, chemical escalation guardrails, and acres potentially spared from blanket spray.
 - Knowledge graph view of fields, issues, observations, and related outbreak edges.
 - GBrain write path through the installed `gbrain` CLI: new reports are written as markdown memory pages and linked with typed edges.
-- Hosted Fly demo bootstraps a local PGLite GBrain at container start so the live path is active without separate infrastructure.
+- Hosted Fly demo ships with a pre-initialized local PGLite GBrain so the live path is active without separate infrastructure.
 - ZeroEntropy context retrieval seam: with `ZEROENTROPY_API_KEY`, DrCrop reranks outbreak memory through `zerank-2`; without a key it stays demoable with local graph scoring.
 - Claude-powered agronomist briefing: with `ANTHROPIC_API_KEY`, DrCrop turns the deterministic plan into a farmer-ready phone briefing; without a key it uses a deterministic fallback.
 
