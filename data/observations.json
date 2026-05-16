@@ -1,0 +1,47 @@
+[
+  {
+    "id": "obs-20260516-alpha-aphid",
+    "fieldId": "field-alpha",
+    "fieldName": "Field Alpha",
+    "zoneName": "A1 north edge",
+    "crop": "Strawberry",
+    "issue": "Aphids",
+    "symptoms": "Aphid colonies on new growth with light honeydew.",
+    "severity": 4,
+    "acres": 3.2,
+    "reportedAt": "2026-05-16T10:25:00.000Z",
+    "windDirectionDeg": 225,
+    "status": "active",
+    "source": "demo-seed"
+  },
+  {
+    "id": "obs-20260516-beta-curling",
+    "fieldId": "field-beta",
+    "fieldName": "Field Beta",
+    "zoneName": "B1 west rows",
+    "crop": "Strawberry",
+    "issue": "Leaf curling",
+    "symptoms": "Curling on tender leaves near the west rows; no visible mites.",
+    "severity": 3,
+    "acres": 1.4,
+    "reportedAt": "2026-05-16T11:05:00.000Z",
+    "windDirectionDeg": 220,
+    "status": "watch",
+    "source": "demo-seed"
+  },
+  {
+    "id": "obs-20260515-gamma-mildew",
+    "fieldId": "field-gamma",
+    "fieldName": "Field Gamma",
+    "zoneName": "G1 lower draw",
+    "crop": "Strawberry",
+    "issue": "Powdery mildew",
+    "symptoms": "Light powder on shaded leaves after foggy morning.",
+    "severity": 2,
+    "acres": 0.8,
+    "reportedAt": "2026-05-15T16:10:00.000Z",
+    "windDirectionDeg": 190,
+    "status": "contained",
+    "source": "demo-seed"
+  }
+]

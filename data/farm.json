@@ -1,0 +1,43 @@
+{
+  "farmName": "Sonoma Berry Demo Farm",
+  "totalAcres": 80,
+  "location": "Sonoma County, California",
+  "fields": [
+    {
+      "id": "field-alpha",
+      "name": "Field Alpha",
+      "crop": "Strawberry",
+      "acres": 22,
+      "centroid": { "lat": 38.2911, "lng": -122.4582 },
+      "zones": ["A1 north edge", "A2 center rows", "A3 riparian edge"],
+      "scoutPriority": "north edge"
+    },
+    {
+      "id": "field-beta",
+      "name": "Field Beta",
+      "crop": "Strawberry",
+      "acres": 18,
+      "centroid": { "lat": 38.2974, "lng": -122.4513 },
+      "zones": ["B1 west rows", "B2 mid-canopy", "B3 road edge"],
+      "scoutPriority": "west rows"
+    },
+    {
+      "id": "field-gamma",
+      "name": "Field Gamma",
+      "crop": "Strawberry",
+      "acres": 16,
+      "centroid": { "lat": 38.2854, "lng": -122.4498 },
+      "zones": ["G1 lower draw", "G2 center", "G3 east fence"],
+      "scoutPriority": "lower draw"
+    },
+    {
+      "id": "field-delta",
+      "name": "Field Delta",
+      "crop": "Raspberry",
+      "acres": 24,
+      "centroid": { "lat": 38.3032, "lng": -122.4618 },
+      "zones": ["D1 hoop entry", "D2 tunnel 4", "D3 south block"],
+      "scoutPriority": "tunnel 4"
+    }
+  ]
+}

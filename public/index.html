@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DrCrop</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Crop Doctor Memory</p>
+          <h1>DrCrop</h1>
+        </div>
+        <div class="status-strip">
+          <span id="gbrainStatus" class="status-pill">Checking GBrain</span>
+          <span id="retrievalStatus" class="status-pill">Checking retrieval</span>
+          <span id="farmLocation" class="status-pill muted">Sonoma County</span>
+        </div>
+      </header>
+
+      <section class="metrics" aria-label="Farm summary">
+        <article class="metric">
+          <span>Active outbreaks</span>
+          <strong id="activeOutbreaks">0</strong>
+        </article>
+        <article class="metric">
+          <span>Targeted acres</span>
+          <strong id="targetedAcres">0</strong>
+        </article>
+        <article class="metric">
+          <span>Spray acres avoided</span>
+          <strong id="avoidedAcres">0</strong>
+        </article>
+        <article class="metric">
+          <span>Memory confidence</span>
+          <strong id="confidence">0%</strong>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <section class="panel map-panel" aria-label="Field memory map">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Live blocks</p>
+              <h2 id="farmName">Farm memory</h2>
+            </div>
+            <button id="refreshButton" class="icon-button" type="button" title="Refresh data">Refresh</button>
+          </div>
+          <div id="fieldMap" class="field-map"></div>
+        </section>
+
+        <section class="panel intake-panel" aria-label="Observation intake">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">New scout report</p>
+              <h2>Observation</h2>
+            </div>
+          </div>
+          <form id="observationForm" class="intake-form">
+            <label>
+              Field
+              <select id="fieldId" name="fieldId"></select>
+            </label>
+            <label>
+              Zone
+              <select id="zoneName" name="zoneName"></select>
+            </label>
+            <label>
+              Issue
+              <select id="issue" name="issue">
+                <option>Aphids</option>
+                <option>Leaf curling</option>
+                <option>Powdery mildew</option>
+                <option>Spider mites</option>
+              </select>
+            </label>
+            <div class="inline-fields">
+              <label>
+                Severity
+                <input id="severity" name="severity" type="range" min="1" max="5" value="3" />
+                <span id="severityValue" class="range-value">3</span>
+              </label>
+              <label>
+                Acres
+                <input id="acres" name="acres" type="number" min="0.1" max="80" step="0.1" value="1.2" />
+              </label>
+            </div>
+            <label>
+              Wind direction
+              <input id="windDirectionDeg" name="windDirectionDeg" type="number" min="0" max="359" value="225" />
+            </label>
+            <label>
+              Symptoms
+              <textarea id="symptoms" name="symptoms" rows="4">Leaf curling and honeydew on new strawberry growth.</textarea>
+            </label>
+            <button id="submitButton" class="primary-button" type="submit">Submit report</button>
+          </form>
+        </section>
+      </section>
+
+      <section class="lower-grid">
+        <section class="panel plan-panel" aria-label="Agent plan">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Agent output</p>
+              <h2 id="planTitle">Targeted action plan</h2>
+            </div>
+            <span id="riskBadge" class="risk-badge">Moderate</span>
+          </div>
+          <p id="planHeadline" class="plan-headline"></p>
+          <ol id="recommendations" class="recommendations"></ol>
+          <div id="relatedMemory" class="related-memory"></div>
+        </section>
+
+        <section class="panel graph-panel" aria-label="Knowledge graph">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">GBrain shape</p>
+              <h2>Memory graph</h2>
+            </div>
+          </div>
+          <div id="graphView" class="graph-view"></div>
+          <form id="memorySearch" class="memory-search">
+            <input id="memoryQuery" name="memoryQuery" value="drcrop aphids strawberry" />
+            <button type="submit">Retrieve</button>
+          </form>
+          <pre id="memoryOutput" class="memory-output"></pre>
+        </section>
+
+        <section class="panel timeline-panel" aria-label="Observation timeline">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Reports</p>
+              <h2>Timeline</h2>
+            </div>
+          </div>
+          <div id="timeline" class="timeline"></div>
+        </section>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
