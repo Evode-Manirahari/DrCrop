@@ -7,6 +7,7 @@ const { buildActionPlan, buildGraph, summarizeFarm } = require("./src/riskEngine
 const { appendObservation, loadFarm, loadObservations, saveObservations } = require("./src/storage");
 const { hasGBrain, recordObservation, searchMemory } = require("./src/gbrainAdapter");
 const zeroEntropy = require("./src/zeroEntropyAdapter");
+const agronomistAgent = require("./src/agronomistAgent");
 
 const root = __dirname;
 const publicDir = path.join(root, "public");
@@ -71,7 +72,8 @@ async function getState() {
     graph: buildGraph(observations, farm.fields),
     summary: summarizeFarm(observations, farm.fields, farm.totalAcres),
     gbrain: hasGBrain(),
-    zeroEntropy: zeroEntropy.status()
+    zeroEntropy: zeroEntropy.status(),
+    agronomist: agronomistAgent.status()
   };
 }
 
@@ -168,6 +170,36 @@ async function handleApi(req, res, url) {
     const query = url.searchParams.get("q") || "strawberry aphids nearby leaf curling";
     const observations = await loadObservations();
     sendJson(res, 200, await zeroEntropy.rerankObservationMemory(query, observations, { topN: 5 }));
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/agronomist/briefing") {
+    const payload = await readBody(req);
+    const farm = await loadFarm();
+    const observations = await loadObservations();
+    const targetId = payload.observationId;
+    const observation =
+      observations.find((item) => item.id === targetId) ||
+      [...observations].sort((a, b) => new Date(b.reportedAt) - new Date(a.reportedAt))[0];
+    if (!observation) {
+      sendError(res, 404, "No observation available to brief on.");
+      return true;
+    }
+    const analysis = buildActionPlan(observation, observations, farm.fields, { totalAcres: farm.totalAcres });
+    const retrieval = await zeroEntropy.rerankObservationMemory(
+      `${observation.crop} ${observation.issue} ${observation.symptoms}`,
+      observations.filter((item) => item.id !== observation.id),
+      { topN: 4, timeoutMs: 4500 }
+    );
+    const briefing = await agronomistAgent.generateBriefing(observation, analysis, retrieval, {
+      timeoutMs: Number(payload.timeoutMs) || 8000
+    });
+    sendJson(res, 200, {
+      observationId: observation.id,
+      analysis,
+      retrieval,
+      briefing
+    });
     return true;
   }
 

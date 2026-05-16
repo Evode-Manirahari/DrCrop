@@ -387,6 +387,54 @@ button {
   line-height: 1.35;
 }
 
+.briefing-box {
+  margin: 0 0 14px;
+  padding: 14px;
+  border: 1px solid rgba(102, 85, 168, 0.32);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(102, 85, 168, 0.06), rgba(102, 85, 168, 0.01));
+}
+
+.briefing-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.briefing-button {
+  border: 1px solid rgba(102, 85, 168, 0.6);
+  border-radius: 8px;
+  min-height: 32px;
+  padding: 0 12px;
+  background: #fff;
+  color: var(--violet);
+  font-weight: 800;
+}
+
+.briefing-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.briefing-text {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+
+.briefing-meta {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .recommendations {
   display: grid;
   gap: 10px;

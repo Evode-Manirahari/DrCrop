@@ -16,6 +16,7 @@
         <div class="status-strip">
           <span id="gbrainStatus" class="status-pill">Checking GBrain</span>
           <span id="retrievalStatus" class="status-pill">Checking retrieval</span>
+          <span id="agronomistStatus" class="status-pill">Checking Claude</span>
           <span id="farmLocation" class="status-pill muted">Sonoma County</span>
         </div>
       </header>
@@ -110,6 +111,14 @@
             <span id="riskBadge" class="risk-badge">Moderate</span>
           </div>
           <p id="planHeadline" class="plan-headline"></p>
+          <div class="briefing-box">
+            <div class="briefing-head">
+              <p class="eyebrow">AI agronomist briefing</p>
+              <button id="briefingButton" class="briefing-button" type="button">Generate briefing</button>
+            </div>
+            <p id="briefingText" class="briefing-text">Press Generate briefing to ask the Claude-powered agronomist for a plain-English plan grounded in the memory graph.</p>
+            <span id="briefingMeta" class="briefing-meta"></span>
+          </div>
           <ol id="recommendations" class="recommendations"></ol>
           <div id="relatedMemory" class="related-memory"></div>
         </section>
