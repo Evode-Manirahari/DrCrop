@@ -11,14 +11,22 @@ const els = {
   targetedAcres: document.getElementById("targetedAcres"),
   avoidedAcres: document.getElementById("avoidedAcres"),
   confidence: document.getElementById("confidence"),
+  heroAvoidedAcres: document.getElementById("heroAvoidedAcres"),
+  heroTargetedAcres: document.getElementById("heroTargetedAcres"),
+  heroActiveOutbreaks: document.getElementById("heroActiveOutbreaks"),
+  heroConfidence: document.getElementById("heroConfidence"),
   farmName: document.getElementById("farmName"),
   farmLocation: document.getElementById("farmLocation"),
   gbrainStatus: document.getElementById("gbrainStatus"),
   retrievalStatus: document.getElementById("retrievalStatus"),
   agronomistStatus: document.getElementById("agronomistStatus"),
+  briefingPanel: document.querySelector(".briefing-panel"),
   briefingButton: document.getElementById("briefingButton"),
   briefingText: document.getElementById("briefingText"),
   briefingMeta: document.getElementById("briefingMeta"),
+  briefingHeadline: document.getElementById("briefingHeadline"),
+  briefingRisk: document.getElementById("briefingRisk"),
+  briefingCopy: document.getElementById("briefingCopy"),
   fieldMap: document.getElementById("fieldMap"),
   fieldId: document.getElementById("fieldId"),
   zoneName: document.getElementById("zoneName"),
@@ -28,7 +36,6 @@ const els = {
   submitButton: document.getElementById("submitButton"),
   planTitle: document.getElementById("planTitle"),
   planHeadline: document.getElementById("planHeadline"),
-  riskBadge: document.getElementById("riskBadge"),
   recommendations: document.getElementById("recommendations"),
   relatedMemory: document.getElementById("relatedMemory"),
   graphView: document.getElementById("graphView"),
@@ -113,6 +120,18 @@ function renderMetrics() {
   els.targetedAcres.textContent = formatNumber(summary.targetedAcres, " ac");
   els.avoidedAcres.textContent = formatNumber(summary.avoidedAcres, " ac");
   els.confidence.textContent = formatNumber(summary.confidence, "%");
+  if (els.heroAvoidedAcres) {
+    els.heroAvoidedAcres.textContent = formatNumber(summary.avoidedAcres);
+  }
+  if (els.heroTargetedAcres) {
+    els.heroTargetedAcres.textContent = formatNumber(summary.targetedAcres);
+  }
+  if (els.heroActiveOutbreaks) {
+    els.heroActiveOutbreaks.textContent = formatNumber(summary.activeOutbreaks);
+  }
+  if (els.heroConfidence) {
+    els.heroConfidence.textContent = formatNumber(summary.confidence, "%");
+  }
 }
 
 function renderFieldControls() {
@@ -211,8 +230,13 @@ function renderPlan() {
   resetBriefingForObservation(observation);
   els.planTitle.textContent = `${observation.fieldName}: ${observation.issue}`;
   els.planHeadline.textContent = analysis.headline;
-  els.riskBadge.textContent = analysis.riskLevel;
-  els.riskBadge.className = `risk-badge ${riskClass(analysis.riskLevel)}`;
+  if (els.briefingHeadline) {
+    els.briefingHeadline.textContent = `${observation.fieldName} · ${observation.issue}`;
+  }
+  if (els.briefingRisk) {
+    els.briefingRisk.textContent = analysis.riskLevel;
+    els.briefingRisk.className = `risk-badge ${riskClass(analysis.riskLevel)}`;
+  }
 
   els.recommendations.innerHTML = "";
   for (const recommendation of analysis.recommendations) {
@@ -368,7 +392,8 @@ async function generateBriefing() {
   const observation = selectedObservation();
   if (!observation || !els.briefingButton) return;
   els.briefingButton.disabled = true;
-  els.briefingButton.textContent = "Thinking";
+  els.briefingButton.textContent = "Thinking…";
+  els.briefingPanel?.setAttribute("data-thinking", "true");
   els.briefingText.textContent = "Asking the agronomist to read the memory graph and write a briefing.";
   els.briefingMeta.textContent = "";
   try {
@@ -389,10 +414,31 @@ async function generateBriefing() {
   } finally {
     els.briefingButton.disabled = false;
     els.briefingButton.textContent = "Generate briefing";
+    els.briefingPanel?.removeAttribute("data-thinking");
+  }
+}
+
+async function copyBriefing() {
+  if (!els.briefingText || !els.briefingCopy) return;
+  const text = els.briefingText.textContent || "";
+  if (!text.trim()) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    const original = els.briefingCopy.textContent;
+    els.briefingCopy.textContent = "Copied";
+    setTimeout(() => {
+      els.briefingCopy.textContent = original;
+    }, 1400);
+  } catch (error) {
+    els.briefingCopy.textContent = "Copy failed";
+    setTimeout(() => {
+      els.briefingCopy.textContent = "Copy";
+    }, 1400);
   }
 }
 
 els.briefingButton?.addEventListener("click", generateBriefing);
+els.briefingCopy?.addEventListener("click", copyBriefing);
 
 loadState().catch((error) => {
   document.body.innerHTML = `<main class="shell"><section class="panel"><h1>DrCrop failed to load</h1><p>${error.message}</p></section></main>`;
