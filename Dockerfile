@@ -7,6 +7,7 @@ RUN apk add --no-cache bash curl git unzip
 ARG BUN_VERSION=1.2.15
 ARG GBRAIN_REF=f004a274298af8efc8a64542c6e8b8bac4ce37a7
 ENV BUN_INSTALL=/root/.bun
+ENV HOME=/root
 ENV PATH=/root/.bun/bin:$PATH
 
 RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
@@ -15,6 +16,7 @@ RUN git clone https://github.com/garrytan/gbrain.git /opt/gbrain \
   && git checkout "${GBRAIN_REF}" \
   && bun install --frozen-lockfile \
   && bun link
+RUN gbrain init --pglite --non-interactive
 
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund
