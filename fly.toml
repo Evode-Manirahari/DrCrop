@@ -5,7 +5,7 @@ primary_region = "sjc"
 
 [env]
   PORT = "8080"
-  DRCROP_GBRAIN = "0"
+  DRCROP_GBRAIN = "1"
   DRCROP_AGRONOMIST_MODEL = "claude-sonnet-4-6"
   ZEROENTROPY_RERANK_MODEL = "zerank-2"
 
