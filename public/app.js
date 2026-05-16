@@ -384,6 +384,32 @@ async function searchMemory(event) {
   }
 }
 
+const SYMPTOM_DEFAULTS = {
+  "Aphids": "Aphid colonies on new growth with light honeydew.",
+  "Leaf curling": "Leaf curling and honeydew on new strawberry growth.",
+  "Powdery mildew": "Light powder on shaded leaves after foggy morning.",
+  "Spider mites": "Stippling and fine webbing on lower leaf surfaces."
+};
+
+const symptomsEl = document.getElementById("symptoms");
+const issueEl = document.getElementById("issue");
+const symptomDefaultValues = new Set(Object.values(SYMPTOM_DEFAULTS));
+let symptomsTouched = symptomsEl ? !symptomDefaultValues.has(symptomsEl.value.trim()) : false;
+
+if (symptomsEl) {
+  symptomsEl.addEventListener("input", () => {
+    symptomsTouched = !symptomDefaultValues.has(symptomsEl.value.trim());
+  });
+}
+
+if (issueEl && symptomsEl) {
+  issueEl.addEventListener("change", () => {
+    if (symptomsTouched) return;
+    const next = SYMPTOM_DEFAULTS[issueEl.value];
+    if (next) symptomsEl.value = next;
+  });
+}
+
 els.fieldId.addEventListener("change", renderZones);
 els.severity.addEventListener("input", () => {
   els.severityValue.textContent = els.severity.value;
