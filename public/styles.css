@@ -472,6 +472,15 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
 .marker.low { background: var(--water); }
 .marker.moderate { background: var(--amber); }
 .marker.high, .marker.critical { background: var(--red); }
+.marker.historical {
+  width: 16px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 2px solid rgba(15, 23, 20, 0.32);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+  opacity: 0.78;
+}
+.marker.historical:hover { opacity: 1; transform: translate(-50%, -50%) scale(1.18); }
+.marker.fresh { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.85), 0 10px 24px rgba(0, 0, 0, 0.32); }
 .pulse-ring {
   position: absolute;
   inset: -12px;

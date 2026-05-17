@@ -3,7 +3,8 @@ const state = {
   observations: [],
   selectedObservationId: null,
   graph: null,
-  summary: null
+  summary: null,
+  freshObservationIds: new Set()
 };
 
 const els = {
@@ -187,17 +188,20 @@ function renderMap() {
       const marker = document.createElement("button");
       const risk = riskClass(observation.analysis?.riskLevel);
       const [left, top] = markerPosition(index);
-      marker.className = `marker ${risk}`;
+      const isFresh = state.freshObservationIds.has(observation.id);
+      marker.className = isFresh ? `marker ${risk} fresh` : "marker historical";
       marker.type = "button";
       marker.style.left = `${left}%`;
       marker.style.top = `${top}%`;
-      marker.title = `${observation.issue}: ${observation.zoneName}`;
+      marker.title = isFresh
+        ? `${observation.issue}: ${observation.zoneName} (new this session)`
+        : `${observation.issue}: ${observation.zoneName} (historical memory)`;
       marker.addEventListener("click", () => {
         state.selectedObservationId = observation.id;
         renderPlan();
         renderTimeline();
       });
-      if (risk === "high" || risk === "critical") {
+      if (isFresh && (risk === "high" || risk === "critical")) {
         const pulse = document.createElement("span");
         pulse.className = "pulse-ring";
         marker.append(pulse);
@@ -347,6 +351,7 @@ async function submitObservation(event) {
       body: JSON.stringify(payload)
     });
     state.selectedObservationId = result.observation.id;
+    state.freshObservationIds.add(result.observation.id);
     if (result.gbrain?.queued) {
       els.memoryOutput.textContent = `Observation saved. GBrain write queued in background (id: ${result.gbrain.observationId}).`;
       pollGBrainStatus(result.gbrain.observationId);
