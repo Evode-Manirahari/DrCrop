@@ -231,6 +231,34 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   font-size: clamp(1rem, 1.2vw, 1.18rem);
   line-height: 1.55;
 }
+.wedge {
+  position: relative;
+  margin: 0 0 22px;
+  padding: 14px 18px 14px 22px;
+  border-left: 3px solid var(--field-dark);
+  background: linear-gradient(90deg, rgba(76, 139, 95, 0.08), rgba(76, 139, 95, 0));
+  border-radius: 0 10px 10px 0;
+}
+.wedge p {
+  margin: 0;
+  font-size: clamp(1.05rem, 1.5vw, 1.32rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  line-height: 1.35;
+}
+.wedge em { color: var(--field-darker); font-style: normal; }
+.wedge-mark {
+  position: absolute;
+  top: -4px;
+  left: -2px;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--field);
+  line-height: 1;
+  opacity: 0.5;
+}
+
 .hero-cta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
 .hero-meta {
   margin: 0;
@@ -285,7 +313,8 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   font-weight: 800;
   color: var(--field-dark);
 }
-.impact-caption { margin: 4px 0 18px; color: var(--ink-soft); font-size: 0.95rem; line-height: 1.45; max-width: 28ch; }
+.impact-caption { margin: 4px 0 18px; color: var(--ink-soft); font-size: 0.95rem; line-height: 1.5; max-width: 32ch; }
+.impact-caption strong { color: var(--field-darker); }
 .impact-meta {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -308,6 +337,13 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   width: min(1280px, 100%);
   margin: 0 auto;
   padding: clamp(24px, 4vw, 44px) clamp(20px, 5vw, 64px);
+}
+.how-lede {
+  margin: 0 0 18px;
+  font-size: clamp(1rem, 1.4vw, 1.18rem);
+  font-weight: 700;
+  color: var(--ink-soft);
+  letter-spacing: -0.005em;
 }
 .how-steps {
   display: grid;

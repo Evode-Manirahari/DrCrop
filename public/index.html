@@ -34,19 +34,23 @@
       <section class="hero">
         <div class="hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow">AI agronomist · low-pesticide agriculture</p>
-            <h1>Stop blanket-spraying acres you don't need to.</h1>
-            <p class="hero-sub">DrCrop remembers every pest observation across your farm and connects them into a living memory graph. When a new scout report comes in, the agronomist tells you exactly which zones to scout first — and which acres to leave alone.</p>
+            <p class="eyebrow">AI agronomist · live on a Sonoma County farm</p>
+            <h1>Stop spraying 80 acres for a problem on&nbsp;3.</h1>
+            <blockquote class="wedge">
+              <span class="wedge-mark" aria-hidden="true">“</span>
+              <p>Farmers don't need another detector. They need <em>memory</em>.</p>
+            </blockquote>
+            <p class="hero-sub">A Sonoma strawberry grower told us he over-sprays the whole farm because he can't see how an outbreak is moving block to block. DrCrop turns every scout report — human today, drone or sensor tomorrow — into a connected memory across crop, pest, location, time, and weather. Then it tells the agronomist exactly which acres to act on, and which to leave alone.</p>
             <div class="hero-cta">
-              <a class="primary-button" href="#console">See it work</a>
-              <a class="ghost-button" href="https://drcrop-demo.fly.dev/" target="_blank" rel="noopener">Live demo</a>
+              <a class="primary-button" href="#console">Brief the agronomist</a>
+              <a class="ghost-button" href="https://github.com/Evode-Manirahari/DrCrop" target="_blank" rel="noopener">Source on GitHub</a>
             </div>
-            <p class="hero-meta">Built on <a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a> + <a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a> · context retrieval by <a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a> · agronomist powered by Claude Sonnet 4.6</p>
+            <p class="hero-meta">Built on <a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a> + <a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a> · context retrieval by <a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a> · agronomist powered by Claude Sonnet 4.6 · written for <a href="https://www.ycombinator.com/rfs" target="_blank" rel="noopener">Garry Tan's RFS for low-pesticide agriculture</a></p>
           </div>
           <aside class="hero-impact" aria-label="Live farm impact">
-            <p class="eyebrow">Live impact</p>
+            <p class="eyebrow">Live on this farm right now</p>
             <p class="impact-line"><span id="heroAvoidedAcres" class="impact-number">—</span><span class="impact-unit">acres</span></p>
-            <p class="impact-caption">of unnecessary spray avoided across the demo farm today.</p>
+            <p class="impact-caption">of unnecessary spray avoided today.<br /><strong>Up to 90% less</strong> at full scale.</p>
             <dl class="impact-meta">
               <div><dt>Targeted</dt><dd><span id="heroTargetedAcres">—</span> ac</dd></div>
               <div><dt>Active outbreaks</dt><dd><span id="heroActiveOutbreaks">—</span></dd></div>
@@ -57,21 +61,22 @@
       </section>
 
       <section class="how">
+        <p class="how-lede">Three steps. Every observation. Every block. One connected memory.</p>
         <ol class="how-steps">
           <li>
             <span class="how-step-num">1</span>
-            <h3>Scout reports an observation</h3>
-            <p>A field-level note — pest, zone, severity, wind direction — drops into the console in seconds.</p>
+            <h3>An observation lands</h3>
+            <p>Human scout today. Drone, phone photo, or field sensor tomorrow. All the same shape: crop, pest, zone, severity, time, wind.</p>
           </li>
           <li>
             <span class="how-step-num">2</span>
-            <h3>GBrain links it to prior memory</h3>
-            <p>Typed edges connect the new report to nearby blocks, recent outbreaks, and matching pest profiles.</p>
+            <h3>GBrain connects the dots</h3>
+            <p>Typed edges link the new report to nearby blocks, recent outbreaks, matching pest profiles, and the wind-aligned spread path.</p>
           </li>
           <li>
             <span class="how-step-num">3</span>
-            <h3>Claude writes a targeted plan</h3>
-            <p>Plain English, biological-first, with a strict chemical guardrail. Acres saved, not blanket-sprayed.</p>
+            <h3>Claude writes the targeted plan</h3>
+            <p>Plain English. Scout this zone first. Try biological. Escalate to chemicals only if scouting confirms the threshold.</p>
           </li>
         </ol>
       </section>
