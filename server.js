@@ -171,6 +171,7 @@ async function createObservation(payload) {
 }
 
 const gbrainQueue = new Map();
+const MAX_GBRAIN_QUEUE_ENTRIES = 100;
 
 function trackGBrainWrite(observation, analysis) {
   if (process.env.DRCROP_GBRAIN === "0") return;
@@ -182,6 +183,11 @@ function trackGBrainWrite(observation, analysis) {
     errors: []
   };
   gbrainQueue.set(observation.id, entry);
+  while (gbrainQueue.size > MAX_GBRAIN_QUEUE_ENTRIES) {
+    const oldest = gbrainQueue.keys().next().value;
+    if (oldest === undefined) break;
+    gbrainQueue.delete(oldest);
+  }
   Promise.resolve()
     .then(() => recordObservation(observation, analysis))
     .then((result) => {
@@ -247,6 +253,12 @@ async function handleApi(req, res, url) {
   }
 
   if (req.method === "GET" && url.pathname === "/api/gbrain/recent") {
+    const observationId = url.searchParams.get("observationId");
+    if (observationId) {
+      const entry = gbrainQueue.get(observationId);
+      sendJson(res, 200, { entries: entry ? [entry] : [] });
+      return true;
+    }
     const recent = [...gbrainQueue.values()]
       .sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))
       .slice(0, 8);

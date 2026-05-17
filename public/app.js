@@ -452,8 +452,8 @@ async function generateBriefing() {
 async function pollGBrainStatus(observationId, attempts = 0) {
   if (attempts > 30) return;
   try {
-    const result = await fetchJson("/api/gbrain/recent");
-    const entry = (result.entries || []).find((item) => item.observationId === observationId);
+    const result = await fetchJson(`/api/gbrain/recent?observationId=${encodeURIComponent(observationId)}`);
+    const entry = (result.entries || [])[0];
     if (!entry) {
       setTimeout(() => pollGBrainStatus(observationId, attempts + 1), 2000);
       return;
@@ -468,7 +468,8 @@ async function pollGBrainStatus(observationId, attempts = 0) {
       ? `GBrain write complete for ${observationId}.\n${lines}`
       : `GBrain write finished with errors for ${observationId}.\n${(entry.errors || []).join("\n")}\n${lines}`;
   } catch (error) {
-    // silent — UX shouldn't break if status polling fails
+    // Transient failure — back off and retry rather than abandoning the loop forever.
+    setTimeout(() => pollGBrainStatus(observationId, attempts + 1), 4000);
   }
 }
 
