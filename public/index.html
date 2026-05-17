@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="DrCrop is an AI agronomist with a shared memory graph for low-pesticide agriculture. Connects pest observations across blocks so farms spray less and scout smarter." />
+    <meta name="description" content="DrCrop turns scout reports, drone imagery, and field-camera evidence into GBrain memory so low-pesticide farms can scout first, spray less, and reduce residue risk." />
     <meta name="theme-color" content="#2f6f47" />
-    <title>DrCrop — AI agronomist memory for low-pesticide farms</title>
+    <title>DrCrop - AI agronomist memory for low-pesticide farms</title>
     <link rel="preconnect" href="https://rsms.me/" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     <link rel="stylesheet" href="/styles.css" />
@@ -34,19 +34,23 @@
       <section class="hero">
         <div class="hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow">AI agronomist · low-pesticide agriculture</p>
-            <h1>Stop blanket-spraying acres you don't need to.</h1>
-            <p class="hero-sub">DrCrop remembers every pest observation across your farm and connects them into a living memory graph. When a new scout report comes in, the agronomist tells you exactly which zones to scout first — and which acres to leave alone.</p>
+            <p class="eyebrow">AI agronomist · live on a Sonoma County farm</p>
+            <h1>Stop spraying 80 acres for a 3-acre outbreak.</h1>
+            <blockquote class="wedge">
+              <span class="wedge-mark" aria-hidden="true">“</span>
+              <p>Farmers do not just need detection. They need <em>memory</em>.</p>
+            </blockquote>
+            <p class="hero-sub">A Sonoma strawberry grower told us he sprays far beyond the affected block because he cannot see whether pests are spreading. DrCrop turns scout reports today, and drone or field-camera evidence tomorrow, into GBrain memory across crop, pest, location, time, and conditions. Then the AI agronomist returns a biological-first plan: where to scout, what to treat, and which acres to leave alone. Fewer unnecessary sprays means lower residue risk on food.</p>
             <div class="hero-cta">
-              <a class="primary-button" href="#console">See it work</a>
-              <a class="ghost-button" href="https://drcrop-demo.fly.dev/" target="_blank" rel="noopener">Live demo</a>
+              <a class="primary-button" href="#console">Brief the agronomist</a>
+              <a class="ghost-button" href="https://github.com/Evode-Manirahari/DrCrop" target="_blank" rel="noopener">Source on GitHub</a>
             </div>
-            <p class="hero-meta">Built on <a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a> + <a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a> · context retrieval by <a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a> · agronomist powered by Claude Sonnet 4.6</p>
+            <p class="hero-meta">Built on <a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a> + <a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a> · context retrieval by <a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a> · agronomist powered by Claude Sonnet 4.6 · written for <a href="https://www.ycombinator.com/rfs" target="_blank" rel="noopener">Garry Tan's RFS for low-pesticide agriculture</a></p>
           </div>
           <aside class="hero-impact" aria-label="Live farm impact">
-            <p class="eyebrow">Live impact</p>
+            <p class="eyebrow">Live on this farm right now</p>
             <p class="impact-line"><span id="heroAvoidedAcres" class="impact-number">—</span><span class="impact-unit">acres</span></p>
-            <p class="impact-caption">of unnecessary spray avoided across the demo farm today.</p>
+            <p class="impact-caption">of unnecessary spray avoided today.<br /><strong>Up to 90% less spray, lower residue risk.</strong></p>
             <dl class="impact-meta">
               <div><dt>Targeted</dt><dd><span id="heroTargetedAcres">—</span> ac</dd></div>
               <div><dt>Active outbreaks</dt><dd><span id="heroActiveOutbreaks">—</span></dd></div>
@@ -57,21 +61,22 @@
       </section>
 
       <section class="how">
+        <p class="how-lede">Three steps. Every observation. Every block. One connected memory.</p>
         <ol class="how-steps">
           <li>
             <span class="how-step-num">1</span>
-            <h3>Scout reports an observation</h3>
-            <p>A field-level note — pest, zone, severity, wind direction — drops into the console in seconds.</p>
+            <h3>An observation lands</h3>
+            <p>Human scout today. Drone, phone photo, or field camera tomorrow. All the same shape: crop, pest, zone, severity, time, symptoms.</p>
           </li>
           <li>
             <span class="how-step-num">2</span>
-            <h3>GBrain links it to prior memory</h3>
-            <p>Typed edges connect the new report to nearby blocks, recent outbreaks, and matching pest profiles.</p>
+            <h3>GBrain connects the dots</h3>
+            <p>Typed edges link the new report to nearby blocks, recent outbreaks, matching pest profiles, and the wind-aligned spread path.</p>
           </li>
           <li>
             <span class="how-step-num">3</span>
-            <h3>Claude writes a targeted plan</h3>
-            <p>Plain English, biological-first, with a strict chemical guardrail. Acres saved, not blanket-sprayed.</p>
+            <h3>The AI agronomist recommends action</h3>
+            <p>Scout first. Use biological controls when they fit. Escalate to chemicals only if scouting confirms the threshold.</p>
           </li>
         </ol>
       </section>
@@ -162,7 +167,7 @@
               </label>
               <label>
                 Symptoms
-                <textarea id="symptoms" name="symptoms" rows="4" placeholder="Describe what the scout sees in the field. Auto-filled per issue — edit freely.">Aphid colonies on new growth with light honeydew.</textarea>
+                <textarea id="symptoms" name="symptoms" rows="4" placeholder="Describe what the scout sees in the field. Auto-filled per issue; edit freely.">Aphid colonies on new growth with light honeydew.</textarea>
               </label>
               <button id="submitButton" class="primary-button" type="submit">Submit report</button>
             </form>
@@ -238,11 +243,11 @@
         <div>
           <p class="eyebrow">Stack</p>
           <ul class="footlist">
-            <li><a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a> — agent operating layer</li>
-            <li><a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a> — memory graph</li>
-            <li><a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a> — context rerank</li>
-            <li>Anthropic Claude Sonnet 4.6 — agronomist voice</li>
-            <li>Fly.io — hosted at <a href="https://drcrop-demo.fly.dev" target="_blank" rel="noopener">drcrop-demo.fly.dev</a></li>
+            <li><a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a> - agent operating layer</li>
+            <li><a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a> - memory graph</li>
+            <li><a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a> - context rerank</li>
+            <li>Anthropic Claude Sonnet 4.6 - agronomist voice</li>
+            <li>Fly.io - hosted at <a href="https://drcrop-demo.fly.dev" target="_blank" rel="noopener">drcrop-demo.fly.dev</a></li>
           </ul>
         </div>
         <div>

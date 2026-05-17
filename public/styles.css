@@ -39,11 +39,8 @@ body {
   color: var(--ink);
   font-family: "Inter var", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-feature-settings: "cv11", "ss01", "ss03";
-  letter-spacing: -0.005em;
-  background:
-    radial-gradient(1100px 600px at 90% -10%, rgba(76, 139, 95, 0.18), transparent 60%),
-    radial-gradient(900px 500px at -10% 10%, rgba(102, 85, 168, 0.10), transparent 60%),
-    var(--paper);
+  letter-spacing: 0;
+  background: linear-gradient(180deg, #f8fbf9 0, var(--paper) 360px, var(--paper) 100%);
 }
 
 button, input, select, textarea { font: inherit; }
@@ -56,13 +53,13 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   color: var(--muted);
   font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 .eyebrow.accent { color: var(--violet); }
 .muted-text { color: var(--muted); }
 .footnote { margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.55; }
-.footnote.tight { margin-top: 28px; font-size: 0.76rem; letter-spacing: 0.04em; }
+.footnote.tight { margin-top: 28px; font-size: 0.76rem; letter-spacing: 0; }
 
 /* ─── TOP NAV ─────────────────────────────────────── */
 
@@ -98,12 +95,12 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   color: #fff;
   box-shadow: var(--shadow-sm);
 }
-.brand-name { font-size: 1.05rem; letter-spacing: -0.01em; }
+.brand-name { font-size: 1.05rem; letter-spacing: 0; }
 .brand-tag {
   color: var(--muted);
   font-weight: 700;
   font-size: 0.74rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 .status-strip {
@@ -220,17 +217,45 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
 }
 .hero-copy h1 {
   margin: 8px 0 14px;
-  font-size: clamp(2.4rem, 6vw, 4.8rem);
+  font-size: 4.6rem;
   line-height: 0.98;
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
 }
 .hero-sub {
   max-width: 60ch;
   margin: 0 0 22px;
   color: var(--ink-soft);
-  font-size: clamp(1rem, 1.2vw, 1.18rem);
+  font-size: 1.08rem;
   line-height: 1.55;
 }
+.wedge {
+  position: relative;
+  margin: 0 0 22px;
+  padding: 14px 18px 14px 22px;
+  border-left: 3px solid var(--field-dark);
+  background: linear-gradient(90deg, rgba(76, 139, 95, 0.08), rgba(76, 139, 95, 0));
+  border-radius: 0 10px 10px 0;
+}
+.wedge p {
+  margin: 0;
+  font-size: 1.18rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ink);
+  line-height: 1.35;
+}
+.wedge em { color: var(--field-darker); font-style: normal; }
+.wedge-mark {
+  position: absolute;
+  top: -4px;
+  left: -2px;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--field);
+  line-height: 1;
+  opacity: 0.5;
+}
+
 .hero-cta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
 .hero-meta {
   margin: 0;
@@ -254,17 +279,6 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   position: relative;
   overflow: hidden;
 }
-.hero-impact::after {
-  content: "";
-  position: absolute;
-  right: -40px;
-  bottom: -60px;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(76, 139, 95, 0.18), transparent);
-  pointer-events: none;
-}
 .impact-line {
   display: flex;
   align-items: baseline;
@@ -272,9 +286,9 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   margin: 0;
 }
 .impact-number {
-  font-size: clamp(3rem, 7vw, 5.6rem);
+  font-size: 5.1rem;
   font-weight: 800;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
   color: var(--field-darker);
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -285,7 +299,8 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   font-weight: 800;
   color: var(--field-dark);
 }
-.impact-caption { margin: 4px 0 18px; color: var(--ink-soft); font-size: 0.95rem; line-height: 1.45; max-width: 28ch; }
+.impact-caption { margin: 4px 0 18px; color: var(--ink-soft); font-size: 0.95rem; line-height: 1.5; max-width: 32ch; }
+.impact-caption strong { color: var(--field-darker); }
 .impact-meta {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -294,7 +309,7 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   padding-top: 14px;
   border-top: 1px dashed var(--line-strong);
 }
-.impact-meta dt { color: var(--muted); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.impact-meta dt { color: var(--muted); font-size: 0.7rem; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
 .impact-meta dd { margin: 4px 0 0; font-size: 1.2rem; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 @keyframes countPop {
@@ -308,6 +323,13 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   width: min(1280px, 100%);
   margin: 0 auto;
   padding: clamp(24px, 4vw, 44px) clamp(20px, 5vw, 64px);
+}
+.how-lede {
+  margin: 0 0 18px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  letter-spacing: 0;
 }
 .how-steps {
   display: grid;
@@ -338,7 +360,7 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   font-size: 0.86rem;
   margin-bottom: 10px;
 }
-.how-steps h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
+.how-steps h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: 0; }
 .how-steps p { margin: 0; color: var(--ink-soft); line-height: 1.5; font-size: 0.94rem; }
 
 /* ─── CONSOLE ─────────────────────────────────────── */
@@ -355,7 +377,7 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   gap: 14px;
   margin-bottom: 18px;
 }
-.console-head h2 { margin: 0; font-size: clamp(1.5rem, 3vw, 2.2rem); letter-spacing: -0.02em; }
+.console-head h2 { margin: 0; font-size: 2rem; letter-spacing: 0; }
 .console-sub { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; }
 .console-head-actions { display: inline-flex; gap: 8px; flex-shrink: 0; }
 
@@ -372,8 +394,8 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   box-shadow: var(--shadow);
 }
 .metric { padding: 16px 18px; min-height: 100px; }
-.metric span { display: block; color: var(--muted); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
-.metric strong { display: block; margin-top: 8px; font-size: clamp(1.6rem, 3vw, 2.4rem); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.metric span { display: block; color: var(--muted); font-size: 0.78rem; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+.metric strong { display: block; margin-top: 8px; font-size: 2.2rem; font-variant-numeric: tabular-nums; letter-spacing: 0; }
 .metric.metric-hero {
   background: linear-gradient(135deg, rgba(76, 139, 95, 0.10), rgba(47, 111, 71, 0.04));
   border-color: rgba(47, 111, 71, 0.35);
@@ -386,7 +408,7 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
 
 .panel { padding: 20px; min-width: 0; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
-.panel-head h2 { margin: 0; font-size: 1.15rem; letter-spacing: -0.01em; }
+.panel-head h2 { margin: 0; font-size: 1.15rem; letter-spacing: 0; }
 .panel-foot { margin: 10px 0 0; color: var(--muted); font-size: 0.8rem; }
 
 /* ─── FIELD MAP ───────────────────────────────────── */
@@ -432,7 +454,7 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 .field-label strong, .field-label span { display: block; }
-.field-label strong { font-size: 0.95rem; letter-spacing: -0.01em; }
+.field-label strong { font-size: 0.95rem; letter-spacing: 0; }
 .field-label span { margin-top: 2px; color: var(--muted); font-size: 0.76rem; font-weight: 700; }
 
 .marker {
@@ -475,7 +497,7 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 .intake-form select, .intake-form input, .intake-form textarea, .memory-search input {
@@ -508,9 +530,7 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   padding: 24px clamp(20px, 3vw, 32px);
   border-radius: var(--radius-lg);
   border: 1px solid rgba(102, 85, 168, 0.35);
-  background:
-    radial-gradient(900px 240px at 100% -10%, rgba(102, 85, 168, 0.16), transparent 65%),
-    linear-gradient(180deg, #fff, var(--violet-soft));
+  background: linear-gradient(180deg, #fff, var(--violet-soft));
   box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
@@ -531,7 +551,7 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   position: relative;
 }
 .briefing-title { display: flex; flex-direction: column; gap: 2px; }
-.briefing-title h2 { margin: 0; font-size: clamp(1.3rem, 2.4vw, 1.8rem); letter-spacing: -0.015em; }
+.briefing-title h2 { margin: 0; font-size: 1.65rem; letter-spacing: 0; }
 .briefing-title .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .live-dot {
   display: inline-block;
@@ -550,7 +570,7 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
 .briefing-text {
   margin: 0;
   color: var(--ink);
-  font-size: clamp(1.02rem, 1.3vw, 1.16rem);
+  font-size: 1.08rem;
   line-height: 1.65;
   max-width: 78ch;
   position: relative;
@@ -567,7 +587,7 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
   color: var(--muted);
   font-size: 0.74rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 .briefing-panel[data-thinking="true"] .briefing-text { color: var(--muted); }
@@ -704,6 +724,11 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
     flex-wrap: wrap;
     gap: 10px;
   }
+  .hero-copy h1 { font-size: 3.2rem; }
+  .impact-number { font-size: 4.2rem; }
+  .console-head h2 { font-size: 1.7rem; }
+  .metric strong { font-size: 2rem; }
+  .briefing-title h2 { font-size: 1.45rem; }
   .status-strip { order: 3; flex-basis: 100%; justify-content: flex-start; }
   .topnav-actions { margin-left: auto; }
   .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -715,6 +740,10 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
 }
 
 @media (max-width: 440px) {
+  .hero-copy h1 { font-size: 2.45rem; }
+  .hero-sub, .briefing-text { font-size: 1rem; }
+  .wedge p { font-size: 1.05rem; }
+  .impact-number { font-size: 3.25rem; }
   .metrics { grid-template-columns: 1fr; }
   .impact-meta { grid-template-columns: 1fr 1fr; }
   .panel { padding: 16px; }
