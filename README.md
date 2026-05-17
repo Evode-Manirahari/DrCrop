@@ -10,7 +10,7 @@ Live demo: https://drcrop-demo.fly.dev/
 
 A month ago, I spoke with a strawberry grower in Sonoma County managing about 80 acres. He told me something simple and painful: when pests show up in one block, he often sprays far beyond the affected area because he does not have real-time confidence about how the outbreak is spreading.
 
-That means higher chemical costs, more residue risk, and more exposure risk for field workers and nearby communities. It also pushes growers away from the regenerative, biological-first practices many of them want to use.
+That means higher chemical costs, more pesticide residue risk on the food families eat, and a harder path toward regenerative, biological-first farming.
 
 Then I saw Garry Tan's request for startups in AI for low-pesticide agriculture, and the problem clicked: farmers do not just need another detector. They need memory.
 
