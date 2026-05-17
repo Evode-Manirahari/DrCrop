@@ -1,19 +1,41 @@
 # DrCrop
 
-DrCrop is a hackathon MVP for low-pesticide agriculture: an AI agronomist console that remembers pest observations, links related field events, and turns that memory into a targeted scout and treatment plan.
+**Crop Doctor Memory: the shared intelligence layer for low-pesticide agriculture.**
 
-The demo story is the Sonoma strawberry grower problem: if aphids appear in one block and leaf curling appears nearby later, the farmer should not have to blanket-spray 80 acres just to feel confident. DrCrop keeps structured memory of crop, pest, location, severity, timing, and symptoms, then recommends where to scout first and when to escalate.
+Live demo: https://drcrop-demo.fly.dev/
 
-## What Works
+---
+
+## The pitch
+
+A month ago, I spoke with a strawberry grower in Sonoma County managing about 80 acres. He told me something simple and painful: when pests show up in one block, he often sprays far beyond the affected area because he does not have real-time confidence about how the outbreak is spreading.
+
+That means higher chemical costs, more residue risk, and more exposure risk for field workers and nearby communities. It also pushes growers away from the regenerative, biological-first practices many of them want to use.
+
+Then I saw Garry Tan's request for startups in AI for low-pesticide agriculture, and the problem clicked: farmers do not just need another detector. They need memory.
+
+So I built Crop Doctor Memory.
+
+It is an AI agronomist powered by a knowledge graph. When Field Alpha reports aphids, DrCrop remembers the crop, pest, location, severity, timing, and field conditions. Later, when Field Beta reports leaf curling nearby, the agent connects the dots: this may be the same outbreak moving through the farm. Scout this zone first, try a biological intervention, and only escalate to chemical treatment if the threshold is crossed.
+
+Instead of blanket-spraying 80 acres, the farmer gets a targeted action plan.
+
+The goal is simple: help farmers grow more food while cutting unnecessary pesticide use by up to 90%.
+
+Crop Doctor Memory is the shared intelligence layer for low-pesticide agriculture.
+
+---
+
+## What works
 
 - Live scout report intake for fields, zones, symptoms, severity, affected acres, and wind direction.
-- Risk engine that connects related observations by pest/symptom similarity, crop, distance, timing, severity, and wind-aligned spread.
+- Deterministic risk engine that connects related observations by pest/symptom similarity, crop, distance, timing, severity, and wind-aligned spread.
 - Targeted plan showing confidence, biological-first recommendations, chemical escalation guardrails, and acres potentially spared from blanket spray.
 - Knowledge graph view of fields, issues, observations, and related outbreak edges.
-- GBrain write path through the installed `gbrain` CLI: new reports are written as markdown memory pages and linked with typed edges.
-- Hosted Fly demo ships with a pre-initialized local PGLite GBrain so the live path is active without separate infrastructure.
-- ZeroEntropy context retrieval seam: with `ZEROENTROPY_API_KEY`, DrCrop reranks outbreak memory through `zerank-2`; without a key it stays demoable with local graph scoring.
-- Claude-powered agronomist briefing: with `ANTHROPIC_API_KEY`, DrCrop turns the deterministic plan into a farmer-ready phone briefing; without a key it uses a deterministic fallback.
+- **GBrain memory writes** through the installed `gbrain` CLI: every observation is persisted as a markdown memory page with typed links to its field, crop, issue, and related prior observations. Writes happen in the background so the UI stays snappy.
+- **Hosted Fly demo** ships with a pre-initialized local PGLite GBrain so the live path is active without separate infrastructure.
+- **ZeroEntropy context retrieval**: with `ZEROENTROPY_API_KEY`, DrCrop reranks outbreak memory through `zerank-2`; without a key it stays demoable with local graph scoring.
+- **Claude-powered agronomist briefing** (Sonnet 4.6): with `ANTHROPIC_API_KEY`, DrCrop turns the deterministic plan into a farmer-ready phone briefing grounded in the linked memory; without a key it uses a deterministic fallback.
 
 ## Run
 
@@ -29,7 +51,7 @@ Optional environment:
 export ZEROENTROPY_API_KEY=...
 export ANTHROPIC_API_KEY=...
 export DRCROP_AGRONOMIST_MODEL=claude-sonnet-4-6
-export DRCROP_GBRAIN=0 # disable GBrain writes if the local brain is not ready
+export DRCROP_GBRAIN=0   # disable GBrain writes if the local brain is not ready
 ```
 
 Quick verification:
@@ -38,7 +60,7 @@ Quick verification:
 curl http://localhost:3000/api/health
 ```
 
-Reset the live demo back to the seed Sonoma scenario:
+Reset the demo back to the seed Sonoma scenario:
 
 ```bash
 curl -X POST http://localhost:3000/api/demo/reset
@@ -52,10 +74,10 @@ npm test
 
 ## Stack
 
-- GStack was used as the build workflow and agent operating layer.
-- GBrain is the structured memory layer. DrCrop calls `gbrain put` and `gbrain link` to persist observations and graph relationships.
-- ZeroEntropy is the context retrieval layer requested in the hackathon instructions. DrCrop uses the official rerank endpoint shape with `zerank-2` when an API key is configured.
-- Claude is the optional explanation layer. The agronomist endpoint is grounded in the deterministic DrCrop plan and linked memory, then falls back locally when no API key is present.
+- **GStack** was used as the build workflow and agent operating layer.
+- **GBrain** is the structured memory layer. DrCrop calls `gbrain put` and `gbrain link` to persist observations and graph relationships.
+- **ZeroEntropy** is the context retrieval layer. DrCrop uses the official rerank endpoint shape with `zerank-2` when an API key is configured.
+- **Claude Sonnet 4.6** is the explanation layer. The agronomist endpoint is grounded in the deterministic DrCrop plan and linked memory, then falls back locally when no API key is present.
 
 Sources:
 
@@ -63,3 +85,7 @@ Sources:
 - GStack: https://github.com/garrytan/gstack
 - ZeroEntropy docs: https://docs.zeroentropy.dev/
 - ZeroEntropy rerank API: https://docs.zeroentropy.dev/api-reference/models/rerank
+
+## Built for
+
+GStack × GBrain Hackathon, San Francisco — May 16, 2026.
