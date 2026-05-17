@@ -26,6 +26,12 @@ Crop Doctor Memory is the shared intelligence layer for low-pesticide agricultur
 
 ---
 
+## How data enters
+
+DrCrop is source-agnostic. A scout report can come from a human scout today, and from drones, phone photos, or field cameras tomorrow. What matters is turning raw field evidence into a structured observation: crop, pest, location, severity, time, and symptoms. Once that observation exists, the agent writes it into memory, compares it against prior outbreaks, and recommends where to scout first, when a biological intervention makes sense, and when to escalate.
+
+---
+
 ## What works
 
 - Live scout report intake for fields, zones, symptoms, severity, affected acres, and wind direction.
