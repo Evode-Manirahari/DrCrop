@@ -16,6 +16,8 @@ Then I saw Garry Tan's request for startups in AI for low-pesticide agriculture,
 
 So I built Crop Doctor Memory.
 
+DrCrop is source-agnostic. A scout report can come from a human scout today — and from drones, phone photos, or field cameras tomorrow. What matters is turning raw field evidence into a structured observation: crop, pest, location, severity, time, and symptoms. Once that observation exists, the agent writes it into memory, compares it against prior outbreaks, and recommends where to scout first, when a biological intervention fits, and when to escalate.
+
 It is an AI agronomist powered by a knowledge graph. When Field Alpha reports aphids, DrCrop remembers the crop, pest, location, severity, timing, and field conditions. Later, when Field Beta reports leaf curling nearby, the agent connects the dots: this may be the same outbreak moving through the farm. Scout this zone first, try a biological intervention, and only escalate to chemical treatment if the threshold is crossed.
 
 Instead of blanket-spraying 80 acres, the farmer gets a targeted action plan.
