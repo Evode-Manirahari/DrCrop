@@ -92,6 +92,10 @@ Sources:
 - ZeroEntropy docs: https://docs.zeroentropy.dev/
 - ZeroEntropy rerank API: https://docs.zeroentropy.dev/api-reference/models/rerank
 
+## License
+
+MIT License. See [LICENSE](LICENSE).
+
 ## Built for
 
 GStack × GBrain Hackathon, San Francisco — May 16, 2026.
