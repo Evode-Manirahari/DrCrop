@@ -347,9 +347,14 @@ async function submitObservation(event) {
       body: JSON.stringify(payload)
     });
     state.selectedObservationId = result.observation.id;
-    els.memoryOutput.textContent = result.gbrain?.ok
-      ? `Wrote ${result.gbrain.observationSlug} to GBrain.\n${result.gbrain.operations.map((op) => `${op.ok ? "ok" : "fail"} ${op.command}`).join("\n")}`
-      : `Observation saved locally. GBrain note: ${(result.gbrain?.errors || ["not available"]).join("\n")}`;
+    if (result.gbrain?.queued) {
+      els.memoryOutput.textContent = `Observation saved. GBrain write queued in background (id: ${result.gbrain.observationId}).`;
+      pollGBrainStatus(result.gbrain.observationId);
+    } else if (result.gbrain?.ok) {
+      els.memoryOutput.textContent = `Wrote ${result.gbrain.observationSlug} to GBrain.\n${(result.gbrain.operations || []).map((op) => `${op.ok ? "ok" : "fail"} ${op.command}`).join("\n")}`;
+    } else {
+      els.memoryOutput.textContent = `Observation saved locally. GBrain note: ${(result.gbrain?.errors || ["not available"]).join("\n")}`;
+    }
     if (result.retrieval) {
       const retrievalLine = result.retrieval.ok
         ? `\n\nZeroEntropy reranked ${result.retrieval.results.length} memories with ${result.retrieval.model}.`
@@ -377,6 +382,32 @@ async function searchMemory(event) {
   } catch (error) {
     els.memoryOutput.textContent = error.message;
   }
+}
+
+const SYMPTOM_DEFAULTS = {
+  "Aphids": "Aphid colonies on new growth with light honeydew.",
+  "Leaf curling": "Leaf curling and honeydew on new strawberry growth.",
+  "Powdery mildew": "Light powder on shaded leaves after foggy morning.",
+  "Spider mites": "Stippling and fine webbing on lower leaf surfaces."
+};
+
+const symptomsEl = document.getElementById("symptoms");
+const issueEl = document.getElementById("issue");
+const symptomDefaultValues = new Set(Object.values(SYMPTOM_DEFAULTS));
+let symptomsTouched = symptomsEl ? !symptomDefaultValues.has(symptomsEl.value.trim()) : false;
+
+if (symptomsEl) {
+  symptomsEl.addEventListener("input", () => {
+    symptomsTouched = !symptomDefaultValues.has(symptomsEl.value.trim());
+  });
+}
+
+if (issueEl && symptomsEl) {
+  issueEl.addEventListener("change", () => {
+    if (symptomsTouched) return;
+    const next = SYMPTOM_DEFAULTS[issueEl.value];
+    if (next) symptomsEl.value = next;
+  });
 }
 
 els.fieldId.addEventListener("change", renderZones);
@@ -415,6 +446,30 @@ async function generateBriefing() {
     els.briefingButton.disabled = false;
     els.briefingButton.textContent = "Generate briefing";
     els.briefingPanel?.removeAttribute("data-thinking");
+  }
+}
+
+async function pollGBrainStatus(observationId, attempts = 0) {
+  if (attempts > 30) return;
+  try {
+    const result = await fetchJson(`/api/gbrain/recent?observationId=${encodeURIComponent(observationId)}`);
+    const entry = (result.entries || [])[0];
+    if (!entry) {
+      setTimeout(() => pollGBrainStatus(observationId, attempts + 1), 2000);
+      return;
+    }
+    if (entry.status === "in_progress") {
+      els.memoryOutput.textContent = `GBrain write in progress for ${observationId}.\n${(entry.operations || []).slice(-3).map((op) => `${op.ok ? "ok" : "fail"} ${op.command}`).join("\n")}`;
+      setTimeout(() => pollGBrainStatus(observationId, attempts + 1), 2000);
+      return;
+    }
+    const lines = (entry.operations || []).map((op) => `${op.ok ? "ok" : "fail"} ${op.command}`).join("\n");
+    els.memoryOutput.textContent = entry.status === "complete"
+      ? `GBrain write complete for ${observationId}.\n${lines}`
+      : `GBrain write finished with errors for ${observationId}.\n${(entry.errors || []).join("\n")}\n${lines}`;
+  } catch (error) {
+    // Transient failure — back off and retry rather than abandoning the loop forever.
+    setTimeout(() => pollGBrainStatus(observationId, attempts + 1), 4000);
   }
 }
 
