@@ -8,6 +8,7 @@ const { appendObservation, loadFarm, loadObservations, resetDemo, saveObservatio
 const { hasGBrain, recordObservation, searchMemory } = require("./src/gbrainAdapter");
 const zeroEntropy = require("./src/zeroEntropyAdapter");
 const agronomistAgent = require("./src/agronomistAgent");
+const drone = require("./src/droneToSpray");
 
 const root = __dirname;
 const publicDir = path.join(root, "public");
@@ -279,6 +280,10 @@ async function handleApi(req, res, url) {
     return true;
   }
 
+  if (url.pathname.startsWith("/api/drone/")) {
+    return handleDroneApi(req, res, url);
+  }
+
   if (req.method === "POST" && url.pathname === "/api/agronomist/briefing") {
     const payload = await readBody(req);
     const farm = await loadFarm();
@@ -310,6 +315,106 @@ async function handleApi(req, res, url) {
   }
 
   return false;
+}
+
+function asciiFilename(name) {
+  // Content-Disposition only safely carries ASCII. Strip diacritics and
+  // collapse non-ASCII to underscores so we never blow up the response.
+  return String(name || "drcrop")
+    .normalize("NFKD")
+    .replace(/[^\x20-\x7e]/g, "_")
+    .replace(/\s+/g, "_")
+    .slice(0, 120) || "drcrop";
+}
+
+function sendBinary(res, statusCode, buffer, contentType, { filename, cache = "no-store" } = {}) {
+  const headers = {
+    "content-type": contentType,
+    "content-length": buffer.length,
+    "cache-control": cache
+  };
+  if (filename) headers["content-disposition"] = `attachment; filename="${asciiFilename(filename)}"`;
+  res.writeHead(statusCode, headers);
+  res.end(buffer);
+}
+
+function sendText(res, statusCode, body, contentType, opts = {}) {
+  const buf = Buffer.from(body, "utf8");
+  sendBinary(res, statusCode, buf, contentType, opts);
+}
+
+const DRONE_FLIGHT_PATTERN = /^\/api\/drone\/flight\/([a-zA-Z0-9-]+)(?:\/(.+))?$/;
+
+async function handleDroneApi(req, res, url) {
+  if (req.method === "POST" && url.pathname === "/api/drone/demo/synthetic") {
+    const payload = await readBody(req).catch(() => ({}));
+    const record = drone.createSyntheticFlight({
+      seed: Number.isFinite(Number(payload.seed)) ? Number(payload.seed) : undefined,
+      blockName: payload.blockName ? cleanString(payload.blockName) : undefined
+    });
+    sendJson(res, 201, { flight: drone.publicView(record) });
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/drone/flights") {
+    sendJson(res, 200, { flights: drone.flightStore.listFlights() });
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/drone/verify") {
+    const payload = await readBody(req);
+    const result = drone.verifyFlight(payload.beforeId, payload.afterId);
+    if (!result) {
+      sendError(res, 404, "One or both flights not found");
+      return true;
+    }
+    sendJson(res, 200, result);
+    return true;
+  }
+
+  const match = url.pathname.match(DRONE_FLIGHT_PATTERN);
+  if (match) {
+    const [, id, rest] = match;
+    const record = drone.flightStore.getFlight(id);
+    if (!record) {
+      sendError(res, 404, "Flight not found");
+      return true;
+    }
+    if (req.method === "GET" && !rest) {
+      sendJson(res, 200, { flight: drone.publicView(record) });
+      return true;
+    }
+    if (req.method === "GET" && rest === "ortho.png") {
+      sendBinary(res, 200, drone.renderOrthoPng(record), "image/png");
+      return true;
+    }
+    if (req.method === "GET" && rest === "overlay.png") {
+      sendBinary(res, 200, drone.renderOverlayPng(record), "image/png");
+      return true;
+    }
+    if (req.method === "GET" && rest === "export/pdf") {
+      sendBinary(res, 200, drone.renderPdf(record), "application/pdf", {
+        filename: `${asciiFilename(record.blockName)}_drcrop.pdf`
+      });
+      return true;
+    }
+    if (req.method === "GET" && rest === "export/kml") {
+      sendText(res, 200, drone.renderKml(record), "application/vnd.google-earth.kml+xml; charset=utf-8", {
+        filename: `${asciiFilename(record.blockName)}_drcrop.kml`
+      });
+      return true;
+    }
+    if (req.method === "GET" && rest === "export/geojson") {
+      const fc = drone.renderGeoJson(record);
+      sendText(res, 200, JSON.stringify(fc, null, 2), "application/geo+json; charset=utf-8", {
+        filename: `${asciiFilename(record.blockName)}_drcrop.geojson`
+      });
+      return true;
+    }
+  }
+
+  sendError(res, 404, "Drone API route not found");
+  return true;
 }
 
 function safeStaticPath(urlPathname) {

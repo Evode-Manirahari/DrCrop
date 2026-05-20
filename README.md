@@ -1,10 +1,39 @@
 # DrCrop
 
-**Crop Doctor Memory: the shared intelligence layer for low-pesticide agriculture.**
+**Drone-to-spray prescription maps for low-pesticide farms.**
+Closed loop: see with drones → decide with AI + agronomist review → act through existing sprayers → verify with before/after flights.
 
 Live demo: https://drcrop-demo.fly.dev/
 
 ---
+
+## Drone-to-Spray (current build)
+
+One drone flight tells a grower where to spray, where to scout, and where to skip. First wedge: Northern California vineyards, under-vine weed pressure. Farmer promise: cut wasted herbicide acres by 50%+ this season using existing sprayers.
+
+Try it without a real flight — the `/drone` panel in the app generates a synthetic Sonoma vineyard ortho, runs the full pipeline, and produces every export:
+
+```bash
+curl -X POST http://localhost:3000/api/drone/demo/synthetic | jq .flight.id
+# → flight-<hex>; then GET /api/drone/flight/<id>/{ortho.png,overlay.png,export/pdf,export/kml,export/geojson}
+```
+
+**Pipeline (`src/droneToSpray/`)**
+
+1. **Intake** — RGB orthomosaic (synthetic today; DJI/DroneDeploy/WebODM ingest next) + field boundary + row geometry.
+2. **ExG vegetation index** — `2g − r − b` per pixel, threshold to a green-mask.
+3. **Row-aware masking** — separates under-vine canopy strips from inter-row strips so weeds get scored *between* vines, not under them.
+4. **Zoning** — buckets each management cell into red (spray), yellow (scout), or green (skip) with acres and estimated dollars/oz saved.
+5. **Export** — PDF for the grower (overlay map + per-zone summary), GeoJSON + KML for the PCA, applicator, or drone pilot.
+6. **Verify** — `POST /api/drone/verify { beforeId, afterId }` diffs two flights to report acres spared and zones improved.
+
+All raster, PDF, KML, and GeoJSON work is pure-JS (Node `zlib` + a hand-rolled PDF builder). No new npm dependencies.
+
+---
+
+## Crop Doctor Memory (verification + briefing layer)
+
+The original scout console — Sonoma County demo data, GBrain typed-link memory, ZeroEntropy rerank, Claude Sonnet briefings — now serves as the **memory and narrative layer** on top of the drone pipeline. The agronomist briefing endpoint will pull from both scout reports and prescription history once the loop closes.
 
 ## The pitch
 

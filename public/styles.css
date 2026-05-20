@@ -758,3 +758,198 @@ a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-und
     transition-duration: 0.001ms !important;
   }
 }
+
+/* --- Drone-to-Spray panel ------------------------------------------------ */
+
+.drone-section {
+  max-width: 1180px;
+  margin: 56px auto 0;
+  padding: 0 32px;
+}
+
+.drone-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.drone-head h2 {
+  margin: 4px 0 8px;
+  font-size: 2rem;
+  letter-spacing: -0.01em;
+}
+
+.drone-sub {
+  margin: 0;
+  max-width: 720px;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.drone-empty {
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  text-align: center;
+  color: var(--muted);
+  background: var(--panel);
+}
+
+.drone-result {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 28px;
+}
+
+.drone-result-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.drone-result-head h3 {
+  margin: 0 0 4px;
+  font-size: 1.35rem;
+}
+
+.drone-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.drone-stats {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.drone-stat {
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.drone-stat span {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.drone-stat strong {
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+}
+
+.drone-stat em {
+  font-style: normal;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.drone-stat-red    { border-color: #d6272866; background: #fff2f2; }
+.drone-stat-yellow { border-color: #f7b50066; background: #fff9e9; }
+.drone-stat-green  { border-color: #2ca02c66; background: #effaee; }
+.drone-stat-savings strong { color: #1f5230; }
+.drone-stat-avoid strong   { color: #1f5230; }
+
+.drone-viewer {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  align-items: start;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.drone-figure {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #111;
+}
+
+.drone-figure figcaption {
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.drone-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.drone-zones summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 0;
+  color: var(--ink-soft);
+}
+
+.drone-zones table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.drone-zones th,
+.drone-zones td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.drone-zones th {
+  background: var(--paper);
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+.zone-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.zone-pill-spray { background: #ffe2e2; color: #b8253a; }
+.zone-pill-scout { background: #fff3cf; color: #8c6300; }
+.zone-pill-skip  { background: #ddf3dd; color: #1f5230; }
+
+@media (max-width: 960px) {
+  .drone-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .drone-viewer { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 540px) {
+  .drone-section { padding: 0 16px; }
+  .drone-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .drone-result { padding: 18px; }
+}

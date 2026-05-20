@@ -60,6 +60,63 @@
         </div>
       </section>
 
+      <section id="drone" class="drone-section">
+        <div class="drone-head">
+          <div>
+            <p class="eyebrow">Drone-to-Spray · NorCal vineyards</p>
+            <h2>One flight tells you where to spray, scout, and skip.</h2>
+            <p class="drone-sub">Upload an orthomosaic, get a red/yellow/green prescription map plus a PDF for the grower and KML/GeoJSON for the applicator. Re-fly to verify chemical savings. This panel runs the full pipeline on a synthetic Sonoma vineyard so you can see the artifact before any real flight.</p>
+          </div>
+          <div class="drone-head-actions">
+            <button id="droneRunButton" class="primary-button" type="button">Run synthetic flight</button>
+          </div>
+        </div>
+
+        <div id="droneEmpty" class="drone-empty">
+          <p>No flight yet. Press <strong>Run synthetic flight</strong> to generate a 5.5-acre Sonoma vineyard block, run ExG + row-mask + zoning, and produce all three exports.</p>
+        </div>
+
+        <div id="droneResult" class="drone-result" hidden>
+          <header class="drone-result-head">
+            <div>
+              <h3 id="droneBlockName">Block</h3>
+              <p id="droneFlightMeta" class="muted-text"></p>
+            </div>
+            <div id="droneDownloads" class="drone-downloads"></div>
+          </header>
+
+          <div class="drone-stats">
+            <article class="drone-stat drone-stat-total"><span>Total mapped</span><strong id="droneTotalAcres">—</strong><em>acres</em></article>
+            <article class="drone-stat drone-stat-red"><span>Spray (red)</span><strong id="droneSprayAcres">—</strong><em>acres</em></article>
+            <article class="drone-stat drone-stat-yellow"><span>Scout (yellow)</span><strong id="droneScoutAcres">—</strong><em>acres</em></article>
+            <article class="drone-stat drone-stat-green"><span>Skip (green)</span><strong id="droneSkipAcres">—</strong><em>acres</em></article>
+            <article class="drone-stat drone-stat-savings"><span>Est. savings</span><strong id="droneSavings">—</strong><em>USD this pass</em></article>
+            <article class="drone-stat drone-stat-avoid"><span>Sprayed-acres avoided</span><strong id="droneAvoidedPct">—</strong><em>%</em></article>
+          </div>
+
+          <div class="drone-viewer">
+            <figure class="drone-figure">
+              <figcaption>Ortho with zone overlay</figcaption>
+              <img id="droneOverlayImg" alt="Prescription overlay over orthomosaic" />
+            </figure>
+            <figure class="drone-figure">
+              <figcaption>Raw orthomosaic</figcaption>
+              <img id="droneOrthoImg" alt="Raw orthomosaic" />
+            </figure>
+          </div>
+
+          <details class="drone-zones">
+            <summary>Per-zone breakdown</summary>
+            <table>
+              <thead>
+                <tr><th>Zone</th><th>Recommendation</th><th>Weed density</th><th>Acres</th><th>Est. saved</th></tr>
+              </thead>
+              <tbody id="droneZoneRows"></tbody>
+            </table>
+          </details>
+        </div>
+      </section>
+
       <section class="how">
         <p class="how-lede">Three steps. Every observation. Every block. One connected memory.</p>
         <ol class="how-steps">

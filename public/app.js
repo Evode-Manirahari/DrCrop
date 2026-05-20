@@ -498,3 +498,106 @@ els.briefingCopy?.addEventListener("click", copyBriefing);
 loadState().catch((error) => {
   document.body.innerHTML = `<main class="shell"><section class="panel"><h1>DrCrop failed to load</h1><p>${error.message}</p></section></main>`;
 });
+
+// --- Drone-to-Spray panel ---------------------------------------------------
+(function initDronePanel() {
+  const runButton = document.getElementById("droneRunButton");
+  if (!runButton) return;
+
+  const empty = document.getElementById("droneEmpty");
+  const result = document.getElementById("droneResult");
+  const blockNameEl = document.getElementById("droneBlockName");
+  const flightMetaEl = document.getElementById("droneFlightMeta");
+  const overlayImg = document.getElementById("droneOverlayImg");
+  const orthoImg = document.getElementById("droneOrthoImg");
+  const downloadsEl = document.getElementById("droneDownloads");
+  const zoneRowsEl = document.getElementById("droneZoneRows");
+
+  const stats = {
+    total: document.getElementById("droneTotalAcres"),
+    spray: document.getElementById("droneSprayAcres"),
+    scout: document.getElementById("droneScoutAcres"),
+    skip: document.getElementById("droneSkipAcres"),
+    savings: document.getElementById("droneSavings"),
+    avoid: document.getElementById("droneAvoidedPct")
+  };
+
+  function fmt(n, digits = 2) {
+    if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
+    const num = Number(n);
+    return num.toLocaleString(undefined, { maximumFractionDigits: digits });
+  }
+
+  function renderFlight(flight) {
+    empty.hidden = true;
+    result.hidden = false;
+    blockNameEl.textContent = flight.blockName || "Block";
+    const when = flight.capturedAt ? new Date(flight.capturedAt).toLocaleString() : "";
+    flightMetaEl.textContent = `${flight.id} · captured ${when} · ${flight.width}×${flight.height}px @ ${flight.pixelSizeMeters}m/px`;
+
+    const s = flight.prescription.summary;
+    stats.total.textContent = fmt(s.totalAcres);
+    stats.spray.textContent = fmt(s.sprayAcres);
+    stats.scout.textContent = fmt(s.scoutAcres);
+    stats.skip.textContent = fmt(s.skipAcres);
+    stats.savings.textContent = `$${fmt(s.estimatedSavingsUsd, 0)}`;
+    stats.avoid.textContent = fmt(s.sprayedAcresAvoidedPct, 1);
+
+    // Cache-bust by appending the flight id to force fresh loads when re-run.
+    overlayImg.src = `${flight.exports.overlayPng}?v=${encodeURIComponent(flight.id)}`;
+    orthoImg.src = `${flight.exports.orthoPng}?v=${encodeURIComponent(flight.id)}`;
+
+    downloadsEl.innerHTML = "";
+    const dl = [
+      { label: "PDF (grower)", href: flight.exports.pdf },
+      { label: "GeoJSON", href: flight.exports.geojson },
+      { label: "KML", href: flight.exports.kml }
+    ];
+    for (const item of dl) {
+      const a = document.createElement("a");
+      a.className = "ghost-button compact";
+      a.href = item.href;
+      a.textContent = item.label;
+      a.setAttribute("download", "");
+      downloadsEl.appendChild(a);
+    }
+
+    const sorted = [...flight.prescription.zones].sort((a, b) => b.density - a.density);
+    zoneRowsEl.innerHTML = sorted
+      .map((z) => `
+        <tr class="drone-zone-row drone-zone-${z.recommendation}">
+          <td>${z.id}</td>
+          <td><span class="zone-pill zone-pill-${z.recommendation}">${z.recommendation}</span></td>
+          <td>${(z.density * 100).toFixed(1)}%</td>
+          <td>${z.acres.toFixed(3)}</td>
+          <td>$${z.estimatedSavingsUsd.toFixed(2)}</td>
+        </tr>`)
+      .join("");
+  }
+
+  async function runFlight() {
+    runButton.disabled = true;
+    const label = runButton.textContent;
+    runButton.textContent = "Running…";
+    try {
+      const seed = Math.floor(Math.random() * 0x7fffffff);
+      const res = await fetch("/api/drone/demo/synthetic", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ seed })
+      });
+      if (!res.ok) throw new Error(`Synthetic flight failed: ${res.status}`);
+      const { flight } = await res.json();
+      renderFlight(flight);
+    } catch (error) {
+      empty.hidden = false;
+      result.hidden = true;
+      empty.innerHTML = `<p style="color:#b8253a">${error.message}</p>`;
+    } finally {
+      runButton.disabled = false;
+      runButton.textContent = label;
+    }
+  }
+
+  runButton.addEventListener("click", runFlight);
+})();
