@@ -52,3 +52,41 @@ npm test
 ## Product Bar
 
 The drone-to-spray panel is the new top-of-funnel: a grower or PCA should be able to press one button and see the artifact (overlay + acres + $ saved + downloads). The scout console below it remains the usable grower workflow for outbreak memory. Neither screen is a marketing landing page.
+
+## GBrain Search Guidance (configured by /sync-gbrain)
+<!-- gstack-gbrain-search-guidance:start -->
+
+GBrain is set up and synced on this machine. The agent should prefer gbrain
+over Grep when the question is semantic or when you don't know the exact
+identifier yet.
+
+**This worktree is pinned to a worktree-scoped code source** via the
+`.gbrain-source` file in the repo root (kubectl-style context). Any
+`gbrain code-def`, `code-refs`, `code-callers`, `code-callees`, or `query`
+call from anywhere under this worktree routes to that source by default —
+no `--source` flag needed.
+
+Two indexed corpora available via the `gbrain` CLI:
+- This worktree's code (auto-pinned via `.gbrain-source`).
+- `~/.gstack/` curated memory (registered as the `default` source today;
+  will migrate to `gstack-brain-<user>` when the federation pipeline runs).
+
+Prefer gbrain when:
+- "Where is X handled?" / semantic intent, no exact string yet:
+    `gbrain search "<terms>"` or `gbrain query "<question>"`
+- "Where is symbol Y defined?" / symbol-based code questions:
+    `gbrain code-def <symbol>` or `gbrain code-refs <symbol>`
+- "What calls Y?" / "What does Y depend on?":
+    `gbrain code-callers <symbol>` / `gbrain code-callees <symbol>`
+- "What did we decide last time?" / past plans, retros, learnings:
+    `gbrain search "<terms>" --source default`
+
+Grep is still right for known exact strings, regex, multiline patterns, and
+file globs. Run `/sync-gbrain` after meaningful code changes; for ongoing
+auto-sync run `gbrain autopilot --install` once per machine.
+
+**Note:** semantic `search`/`query` and the agronomist briefing endpoint
+both need `ZEROENTROPY_API_KEY` exported in the shell to populate
+embeddings (symbol-aware `code-def`/`code-refs` work without it).
+
+<!-- gstack-gbrain-search-guidance:end -->
