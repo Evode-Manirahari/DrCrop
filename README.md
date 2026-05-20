@@ -1,6 +1,7 @@
 # DrCrop
 
-**Drone-to-spray prescription maps for low-pesticide farms.**
+> **DrCrop turns drone images into pesticide saving spray/no-spray maps, helping growers treat only the acres that need it and prove yield was not hurt.**
+
 Closed loop: see with drones → decide with AI + agronomist review → act through existing sprayers → verify with before/after flights.
 
 Live demo: https://drcrop-demo.fly.dev/
