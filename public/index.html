@@ -5,320 +5,349 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="DrCrop turns drone images into pesticide saving spray/no-spray maps, helping growers treat only the acres that need it and prove yield was not hurt." />
     <meta name="theme-color" content="#2f6f47" />
-    <title>DrCrop — Drone-to-spray maps for low-pesticide farms</title>
+    <title>DrCrop — Free spray-waste audit for NorCal vineyards</title>
     <link rel="preconnect" href="https://rsms.me/" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
-  <body>
+  <body class="grower-page">
     <nav class="topnav">
       <a class="brand" href="#top">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2c3 4 4 7 4 10a4 4 0 0 1-8 0c0-3 1-6 4-10Zm-7 13c1 5 4 7 7 7s6-2 7-7c-3 1-5 3-7 5-2-2-4-4-7-5Z"/></svg>
         </span>
         <span class="brand-name">DrCrop</span>
-        <span class="brand-tag">Crop Doctor Memory</span>
       </a>
-      <div class="status-strip">
-        <span id="gbrainStatus" class="status-pill">Checking GBrain</span>
-        <span id="retrievalStatus" class="status-pill">Checking retrieval</span>
-        <span id="agronomistStatus" class="status-pill">Checking Claude</span>
+      <div class="topnav-links">
+        <a href="#how">How it works</a>
+        <a href="#sample">Sample report</a>
+        <a href="#pricing">Pricing</a>
+        <a href="/demo">See the demo</a>
       </div>
       <div class="topnav-actions">
-        <a class="ghost-button" href="https://github.com/Evode-Manirahari/DrCrop" target="_blank" rel="noopener">Source</a>
-        <a class="primary-button compact" href="#console">Open console</a>
+        <a class="primary-button compact" href="#audit">Book a free audit</a>
       </div>
     </nav>
 
     <main id="top">
-      <section class="hero">
-        <div class="hero-grid">
-          <div class="hero-copy">
-            <p class="eyebrow">AI agronomist · live on a Sonoma County farm</p>
-            <h1>Stop spraying 80 acres for a 3-acre outbreak.</h1>
-            <blockquote class="wedge">
-              <span class="wedge-mark" aria-hidden="true">“</span>
-              <p>Farmers do not just need detection. They need <em>memory</em>.</p>
-            </blockquote>
-            <p class="hero-sub">A Sonoma strawberry grower told us he sprays far beyond the affected block because he cannot see whether pests are spreading. DrCrop turns scout reports today, and drone or field-camera evidence tomorrow, into GBrain memory across crop, pest, location, time, and conditions. Then the AI agronomist returns a biological-first plan: where to scout, what to treat, and which acres to leave alone. Fewer unnecessary sprays means lower residue risk on food.</p>
+      <section class="grower-hero">
+        <div class="grower-hero-grid">
+          <div class="grower-hero-copy">
+            <p class="eyebrow">NorCal vineyards · pilot program now booking</p>
+            <h1>Cut wasted herbicide acres by 50%+ this season. We fly. PCA reviews. You only pay if we save you money.</h1>
+            <p class="grower-hero-sub"><strong>DrCrop turns drone images into pesticide saving spray/no-spray maps, helping growers treat only the acres that need it and prove yield was not hurt.</strong></p>
+            <p class="grower-hero-detail">Free 14-day spray-waste audit. We map one block of your vineyard with a drone, deliver a red/yellow/green prescription reviewed by a licensed PCA, and verify the savings on a follow-up flight. No savings, no charge.</p>
             <div class="hero-cta">
-              <a class="primary-button" href="#console">Brief the agronomist</a>
-              <a class="ghost-button" href="https://github.com/Evode-Manirahari/DrCrop" target="_blank" rel="noopener">Source on GitHub</a>
+              <a class="primary-button" href="#audit">Book your free audit</a>
+              <a class="ghost-button" href="#sample">See a sample report</a>
             </div>
-            <p class="hero-meta">Built on <a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a> + <a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a> · context retrieval by <a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a> · agronomist powered by Claude Sonnet 4.6 · written for <a href="https://www.ycombinator.com/rfs" target="_blank" rel="noopener">Garry Tan's RFS for low-pesticide agriculture</a></p>
+            <p class="grower-hero-trust">Decision-support only · we don't write your pesticide recommendation · your block, your data, your call</p>
           </div>
-          <aside class="hero-impact" aria-label="Live farm impact">
-            <p class="eyebrow">Live on this farm right now</p>
-            <p class="impact-line"><span id="heroAvoidedAcres" class="impact-number">—</span><span class="impact-unit">acres</span></p>
-            <p class="impact-caption">of unnecessary spray avoided today.<br /><strong>Up to 90% less spray, lower residue risk.</strong></p>
-            <dl class="impact-meta">
-              <div><dt>Targeted</dt><dd><span id="heroTargetedAcres">—</span> ac</dd></div>
-              <div><dt>Active outbreaks</dt><dd><span id="heroActiveOutbreaks">—</span></dd></div>
-              <div><dt>Memory confidence</dt><dd><span id="heroConfidence">—</span></dd></div>
-            </dl>
+          <aside class="grower-hero-card" aria-label="The promise">
+            <p class="eyebrow">The promise</p>
+            <ul class="promise-list">
+              <li><strong>Free first flight.</strong> One block of your choice, mapped end-to-end.</li>
+              <li><strong>PCA-reviewed map.</strong> A California-licensed PCA signs every prescription.</li>
+              <li><strong>Verified savings.</strong> Re-fly after your spray pass — we show the acres skipped and check the rest stayed healthy.</li>
+              <li><strong>No savings, no charge.</strong> If we can't find acres to skip, you don't pay.</li>
+            </ul>
           </aside>
         </div>
       </section>
 
-      <section id="drone" class="drone-section">
-        <div class="drone-head">
-          <div>
-            <p class="eyebrow">Drone-to-Spray · NorCal vineyards</p>
-            <h2>One flight tells you where to spray, scout, and skip.</h2>
-            <p class="drone-lede"><strong>DrCrop turns drone images into pesticide saving spray/no-spray maps, helping growers treat only the acres that need it and prove yield was not hurt.</strong></p>
-            <p class="drone-sub">Upload an orthomosaic, get a red/yellow/green prescription map plus a PDF for the grower and KML/GeoJSON for the applicator. Re-fly to verify chemical savings. This panel runs the full pipeline on a synthetic Sonoma vineyard so you can see the artifact before any real flight.</p>
-          </div>
-          <div class="drone-head-actions">
-            <button id="droneRunButton" class="primary-button" type="button">Run synthetic flight</button>
-          </div>
-        </div>
-
-        <div id="droneEmpty" class="drone-empty">
-          <p>No flight yet. Press <strong>Run synthetic flight</strong> to generate a 5.5-acre Sonoma vineyard block, run ExG + row-mask + zoning, and produce all three exports.</p>
-        </div>
-
-        <div id="droneResult" class="drone-result" hidden>
-          <header class="drone-result-head">
-            <div>
-              <h3 id="droneBlockName">Block</h3>
-              <p id="droneFlightMeta" class="muted-text"></p>
-            </div>
-            <div id="droneDownloads" class="drone-downloads"></div>
-          </header>
-
-          <div class="drone-stats">
-            <article class="drone-stat drone-stat-total"><span>Total mapped</span><strong id="droneTotalAcres">—</strong><em>acres</em></article>
-            <article class="drone-stat drone-stat-red"><span>Spray (red)</span><strong id="droneSprayAcres">—</strong><em>acres</em></article>
-            <article class="drone-stat drone-stat-yellow"><span>Scout (yellow)</span><strong id="droneScoutAcres">—</strong><em>acres</em></article>
-            <article class="drone-stat drone-stat-green"><span>Skip (green)</span><strong id="droneSkipAcres">—</strong><em>acres</em></article>
-            <article class="drone-stat drone-stat-savings"><span>Est. savings</span><strong id="droneSavings">—</strong><em>USD this pass</em></article>
-            <article class="drone-stat drone-stat-avoid"><span>Sprayed-acres avoided</span><strong id="droneAvoidedPct">—</strong><em>%</em></article>
-          </div>
-
-          <div class="drone-viewer">
-            <figure class="drone-figure">
-              <figcaption>Ortho with zone overlay</figcaption>
-              <img id="droneOverlayImg" alt="Prescription overlay over orthomosaic" />
-            </figure>
-            <figure class="drone-figure">
-              <figcaption>Raw orthomosaic</figcaption>
-              <img id="droneOrthoImg" alt="Raw orthomosaic" />
-            </figure>
-          </div>
-
-          <details class="drone-zones">
-            <summary>Per-zone breakdown</summary>
-            <table>
-              <thead>
-                <tr><th>Zone</th><th>Recommendation</th><th>Weed density</th><th>Acres</th><th>Est. saved</th></tr>
-              </thead>
-              <tbody id="droneZoneRows"></tbody>
-            </table>
-          </details>
-        </div>
-      </section>
-
-      <section class="how">
-        <p class="how-lede">Three steps. Every observation. Every block. One connected memory.</p>
+      <section id="how" class="how grower-how">
+        <p class="eyebrow">How the audit works</p>
+        <h2 class="how-h2">Three steps. Two flights. One signed prescription.</h2>
         <ol class="how-steps">
           <li>
             <span class="how-step-num">1</span>
-            <h3>An observation lands</h3>
-            <p>Human scout today. Drone, phone photo, or field camera tomorrow. All the same shape: crop, pest, zone, severity, time, symptoms.</p>
+            <h3>We fly one block</h3>
+            <p>You pick a block — usually 5–40 acres of under-vine weed pressure. A Part 107 pilot flies an RGB drone in a 2–4 hour window. No equipment, no software for you to install.</p>
           </li>
           <li>
             <span class="how-step-num">2</span>
-            <h3>GBrain connects the dots</h3>
-            <p>Typed edges link the new report to nearby blocks, recent outbreaks, matching pest profiles, and the wind-aligned spread path.</p>
+            <h3>AI segments. A PCA signs.</h3>
+            <p>DrCrop processes the orthomosaic into a red/yellow/green map: spray, scout, skip. A California-licensed PCA reviews and signs the prescription before it lands in your hands.</p>
           </li>
           <li>
             <span class="how-step-num">3</span>
-            <h3>The AI agronomist recommends action</h3>
-            <p>Scout first. Use biological controls when they fit. Escalate to chemicals only if scouting confirms the threshold.</p>
+            <h3>We prove the savings</h3>
+            <p>After your spray pass, we re-fly. You get a verification report: acres skipped, chemical saved, and confirmation the unsprayed acres stayed healthy. If we can't show savings, you don't pay.</p>
           </li>
         </ol>
       </section>
 
-      <section id="console" class="console">
-        <div class="console-head">
+      <section id="sample" class="sample-section">
+        <div class="sample-grid">
           <div>
-            <p class="eyebrow">Live console</p>
-            <h2 id="farmName">Farm memory</h2>
-            <p class="console-sub"><span id="farmLocation" class="muted-text">Sonoma County</span> · scout it like your farm</p>
+            <p class="eyebrow">Sample report</p>
+            <h2>This is what you'll get back.</h2>
+            <p class="sample-lede">Before your real flight, see the artifact. The button below runs our full pipeline on a synthetic 5.5-acre Sonoma vineyard and returns the exact same outputs your block will produce: a one-page PDF for you, a KML for your applicator or PCA, and a GeoJSON if your team has GIS.</p>
+            <p class="sample-meta">PDF · KML · GeoJSON. All hand-rolled, no third-party stack lock-in.</p>
+            <div class="sample-actions">
+              <button id="sampleRunButton" class="primary-button" type="button">Generate sample report</button>
+              <a class="ghost-button" href="/demo">Open the full demo</a>
+            </div>
+            <div id="sampleStatus" class="sample-status" hidden></div>
           </div>
-          <div class="console-head-actions">
-            <button id="refreshButton" class="icon-button" type="button" title="Refresh data">Refresh</button>
-            <button id="resetDemoButton" class="icon-button" type="button" title="Reset demo data">Reset demo</button>
-          </div>
+          <aside class="sample-result" aria-label="Sample result" hidden id="sampleResult">
+            <p class="eyebrow">Synthetic block · ready</p>
+            <h3 id="sampleBlockName">Block</h3>
+            <p id="sampleMeta" class="muted-text"></p>
+            <div class="sample-stats">
+              <div><span>Spray</span><strong id="sampleSprayAcres">—</strong><em>ac</em></div>
+              <div><span>Scout</span><strong id="sampleScoutAcres">—</strong><em>ac</em></div>
+              <div><span>Skip</span><strong id="sampleSkipAcres">—</strong><em>ac</em></div>
+              <div><span>Est. savings</span><strong id="sampleSavings">—</strong><em>USD</em></div>
+            </div>
+            <div class="sample-downloads" id="sampleDownloads"></div>
+          </aside>
         </div>
+      </section>
 
-        <section class="metrics" aria-label="Farm summary">
-          <article class="metric">
-            <span>Active outbreaks</span>
-            <strong id="activeOutbreaks">0</strong>
+      <section id="pricing" class="pricing">
+        <p class="eyebrow">Pricing</p>
+        <h2>Simple. Honest. Aligned with your savings.</h2>
+        <div class="pricing-grid">
+          <article class="pricing-card pricing-card-feature">
+            <p class="pricing-tag">Pilot offer</p>
+            <h3>Free 14-day audit</h3>
+            <p class="pricing-price">$0</p>
+            <p class="pricing-sub">One block, fully mapped, PCA-reviewed, verification re-fly included. No savings, no charge.</p>
+            <a class="primary-button" href="#audit">Book your audit</a>
           </article>
-          <article class="metric">
-            <span>Targeted acres</span>
-            <strong id="targetedAcres">0</strong>
+          <article class="pricing-card">
+            <p class="pricing-tag">Post-audit</p>
+            <h3>Per-block flight</h3>
+            <p class="pricing-price">$500 <span class="pricing-unit">/ block</span></p>
+            <p class="pricing-sub">One full pass — fly, map, PCA-signed prescription, exports for your applicator. Pay per block, no subscription.</p>
           </article>
-          <article class="metric metric-hero">
-            <span>Spray acres avoided</span>
-            <strong id="avoidedAcres">0</strong>
+          <article class="pricing-card">
+            <p class="pricing-tag">Post-audit</p>
+            <h3>Per-acre coverage</h3>
+            <p class="pricing-price">$8–$15 <span class="pricing-unit">/ acre / pass</span></p>
+            <p class="pricing-sub">Best when you're covering 100+ acres. Includes pre-spray map and post-spray verification.</p>
           </article>
-          <article class="metric">
-            <span>Memory confidence</span>
-            <strong id="confidence">0%</strong>
+          <article class="pricing-card">
+            <p class="pricing-tag">Performance</p>
+            <h3>Shared savings</h3>
+            <p class="pricing-price">25% <span class="pricing-unit">of verified chemical savings</span></p>
+            <p class="pricing-sub">Skin in the game. We measure against your baseline herbicide spend. Only available after one paid season.</p>
           </article>
-        </section>
+        </div>
+        <p class="pricing-footnote">All prices in USD. Northern California only for the 2026 season. Pilot slots limited to the first 5 vineyards.</p>
+      </section>
 
-        <section class="workspace">
-          <section class="panel map-panel" aria-label="Field memory map">
-            <div class="panel-head">
-              <div>
-                <p class="eyebrow">Live blocks</p>
-                <h2>Field map</h2>
-              </div>
-            </div>
-            <div id="fieldMap" class="field-map"></div>
-            <p class="panel-foot">Click a marker to load that observation into the action plan.</p>
-          </section>
-
-          <section class="panel intake-panel" aria-label="Observation intake">
-            <div class="panel-head">
-              <div>
-                <p class="eyebrow">New scout report</p>
-                <h2>Observation</h2>
-              </div>
-            </div>
-            <form id="observationForm" class="intake-form">
+      <section id="audit" class="audit-section">
+        <div class="audit-grid">
+          <div>
+            <p class="eyebrow">Book a free audit</p>
+            <h2>One block. Two flights. Zero cost if we can't save you money.</h2>
+            <p class="audit-lede">Fill the form. We'll reach out within 2 business days to confirm a flight window and walk you through the consent + data ownership terms. You keep all the imagery and prescriptions.</p>
+            <ul class="audit-bullets">
+              <li>NorCal only for the 2026 season (Napa, Sonoma, Mendocino, Lake, surrounding).</li>
+              <li>Under-vine weed pressure is the strongest fit. Canopy stress also works.</li>
+              <li>You don't need a drone, software, or GIS team. We bring all three.</li>
+            </ul>
+          </div>
+          <form id="auditForm" class="audit-form" novalidate>
+            <div class="form-row">
               <label>
-                Field
-                <select id="fieldId" name="fieldId"></select>
+                Your name<span aria-hidden="true">*</span>
+                <input name="name" required autocomplete="name" />
               </label>
               <label>
-                Zone
-                <select id="zoneName" name="zoneName"></select>
-              </label>
-              <label>
-                Issue
-                <select id="issue" name="issue">
-                  <option>Aphids</option>
-                  <option>Leaf curling</option>
-                  <option>Powdery mildew</option>
-                  <option>Spider mites</option>
+                Role
+                <select name="role">
+                  <option value="">Pick one…</option>
+                  <option>Vineyard manager</option>
+                  <option>Owner / grower</option>
+                  <option>PCA / crop advisor</option>
+                  <option>Applicator</option>
+                  <option>Other</option>
                 </select>
               </label>
-              <div class="inline-fields">
-                <label>
-                  Severity
-                  <input id="severity" name="severity" type="range" min="1" max="5" value="3" />
-                  <span id="severityValue" class="range-value">3</span>
-                </label>
-                <label>
-                  Acres
-                  <input id="acres" name="acres" type="number" min="0.1" max="80" step="0.1" value="1.2" />
-                </label>
-              </div>
+            </div>
+            <label>
+              Vineyard name<span aria-hidden="true">*</span>
+              <input name="vineyard" required autocomplete="organization" />
+            </label>
+            <div class="form-row">
               <label>
-                Wind direction (°)
-                <input id="windDirectionDeg" name="windDirectionDeg" type="number" min="0" max="359" value="225" />
+                County<span aria-hidden="true">*</span>
+                <select name="county" required>
+                  <option value="">Pick one…</option>
+                  <option>Napa</option>
+                  <option>Sonoma</option>
+                  <option>Mendocino</option>
+                  <option>Lake</option>
+                  <option>Marin</option>
+                  <option>Solano</option>
+                  <option>Other (NorCal)</option>
+                </select>
               </label>
               <label>
-                Symptoms
-                <textarea id="symptoms" name="symptoms" rows="4" placeholder="Describe what the scout sees in the field. Auto-filled per issue; edit freely.">Aphid colonies on new growth with light honeydew.</textarea>
+                Block acres<span aria-hidden="true">*</span>
+                <input name="blockAcres" type="number" min="1" max="200" step="0.5" required placeholder="e.g. 12.5" />
               </label>
-              <button id="submitButton" class="primary-button" type="submit">Submit report</button>
-            </form>
-          </section>
-        </section>
-
-        <section class="panel briefing-panel" aria-label="AI agronomist briefing">
-          <div class="briefing-head">
-            <div class="briefing-title">
-              <span class="live-dot" aria-hidden="true"></span>
-              <p class="eyebrow accent">Live AI briefing</p>
-              <h2 id="briefingHeadline">Targeted action plan</h2>
             </div>
-            <div class="briefing-actions">
-              <span id="briefingRisk" class="risk-badge">Moderate</span>
-              <button id="briefingButton" class="primary-button compact" type="button">Generate briefing</button>
+            <label>
+              Current under-vine herbicide program
+              <textarea name="herbicideProgram" rows="3" placeholder="e.g. glyphosate twice a season, blanket application, ~$X per acre, last sprayed [month]"></textarea>
+            </label>
+            <div class="form-row">
+              <label>
+                Email<span aria-hidden="true">*</span>
+                <input name="email" type="email" required autocomplete="email" />
+              </label>
+              <label>
+                Phone
+                <input name="phone" type="tel" autocomplete="tel" placeholder="optional but faster" />
+              </label>
             </div>
+            <label>
+              Preferred fly window
+              <input name="flyWindow" placeholder="e.g. next 2–4 weeks, after bud break, before harvest" />
+            </label>
+            <label>
+              Anything else we should know?
+              <textarea name="notes" rows="3" placeholder="Existing GIS / drone imagery, PCA contact, gate access, etc."></textarea>
+            </label>
+            <button id="auditSubmit" class="primary-button" type="submit">Request the free audit</button>
+            <p id="auditStatus" class="audit-status" role="status" aria-live="polite"></p>
+            <p class="audit-fineprint">By submitting you agree we can contact you about this audit. We don't share your information. Decision-support output only — DrCrop does not write your pesticide recommendation; your PCA does.</p>
+          </form>
+          <div id="auditThanks" class="audit-thanks" hidden>
+            <p class="eyebrow">Got it.</p>
+            <h2>Thanks — we'll be in touch within 2 business days.</h2>
+            <p>Your audit request is in. Next: we'll email to confirm the block boundary, flight window, and consent terms. If it's faster to text, reply to that email with your number.</p>
+            <p class="muted-text">Reference: <span id="auditReference"></span></p>
+            <p><a class="ghost-button" href="#sample">See a sample report while you wait</a></p>
           </div>
-          <p id="briefingText" class="briefing-text">Press Generate briefing to ask the Claude-powered agronomist for a plain-English plan grounded in the memory graph.</p>
-          <div class="briefing-foot">
-            <span id="briefingMeta" class="briefing-meta"></span>
-            <button id="briefingCopy" class="ghost-button compact" type="button" title="Copy briefing">Copy</button>
-          </div>
-        </section>
-
-        <section class="lower-grid">
-          <section class="panel plan-panel" aria-label="Action plan">
-            <div class="panel-head">
-              <div>
-                <p class="eyebrow">Action plan</p>
-                <h2 id="planTitle">Recommendations</h2>
-              </div>
-            </div>
-            <p id="planHeadline" class="plan-headline"></p>
-            <ol id="recommendations" class="recommendations"></ol>
-            <div id="relatedMemory" class="related-memory"></div>
-          </section>
-
-          <section class="panel graph-panel" aria-label="Knowledge graph">
-            <div class="panel-head">
-              <div>
-                <p class="eyebrow">GBrain shape</p>
-                <h2>Memory graph</h2>
-              </div>
-            </div>
-            <div id="graphView" class="graph-view"></div>
-            <form id="memorySearch" class="memory-search">
-              <input id="memoryQuery" name="memoryQuery" value="drcrop aphids strawberry" />
-              <button type="submit">Retrieve</button>
-            </form>
-            <pre id="memoryOutput" class="memory-output"></pre>
-          </section>
-
-          <section class="panel timeline-panel" aria-label="Observation timeline">
-            <div class="panel-head">
-              <div>
-                <p class="eyebrow">Reports</p>
-                <h2>Timeline</h2>
-              </div>
-            </div>
-            <div id="timeline" class="timeline"></div>
-          </section>
-        </section>
+        </div>
       </section>
     </main>
 
     <footer class="sitefoot">
       <div class="sitefoot-grid">
         <div>
-          <p class="eyebrow">Crop Doctor Memory</p>
-          <p class="footnote">Shared outbreak memory for specialty-crop growers. Built in 12 hours for the GStack × GBrain hackathon, San Francisco.</p>
+          <p class="eyebrow">DrCrop</p>
+          <p class="footnote">Verified spray savings for specialty-crop growers. Pilot program now booking NorCal vineyards for the 2026 season.</p>
         </div>
         <div>
-          <p class="eyebrow">Stack</p>
+          <p class="eyebrow">Built on</p>
           <ul class="footlist">
-            <li><a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a> - agent operating layer</li>
-            <li><a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a> - memory graph</li>
-            <li><a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a> - context rerank</li>
-            <li>Anthropic Claude Sonnet 4.6 - agronomist voice</li>
-            <li>Fly.io - hosted at <a href="https://drcrop-demo.fly.dev" target="_blank" rel="noopener">drcrop-demo.fly.dev</a></li>
+            <li><a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a></li>
+            <li><a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a></li>
+            <li><a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a></li>
+            <li>Anthropic Claude Sonnet 4.6</li>
           </ul>
         </div>
         <div>
           <p class="eyebrow">Repo</p>
           <ul class="footlist">
             <li><a href="https://github.com/Evode-Manirahari/DrCrop" target="_blank" rel="noopener">github.com/Evode-Manirahari/DrCrop</a></li>
-            <li><a href="https://github.com/Evode-Manirahari/DrCrop/pull/1" target="_blank" rel="noopener">Pull request #1 (merged)</a></li>
+            <li><a href="/demo">Live demo console</a></li>
           </ul>
         </div>
       </div>
-      <p class="footnote tight">© 2026 Evode Manirahari · "Working code or GTFO."</p>
+      <p class="footnote tight">© 2026 Evode Manirahari · NorCal vineyards only · decision-support, not a regulated recommendation</p>
     </footer>
 
-    <script src="/app.js"></script>
+    <script>
+      // Sample-report generator: hits the same /api/drone/demo/synthetic the demo uses,
+      // but renders a compact summary inline so growers don't have to learn the full console.
+      (function () {
+        const button = document.getElementById("sampleRunButton");
+        const statusEl = document.getElementById("sampleStatus");
+        const result = document.getElementById("sampleResult");
+        const blockName = document.getElementById("sampleBlockName");
+        const meta = document.getElementById("sampleMeta");
+        const sprayAcres = document.getElementById("sampleSprayAcres");
+        const scoutAcres = document.getElementById("sampleScoutAcres");
+        const skipAcres = document.getElementById("sampleSkipAcres");
+        const savings = document.getElementById("sampleSavings");
+        const downloads = document.getElementById("sampleDownloads");
+
+        if (!button) return;
+
+        button.addEventListener("click", async () => {
+          button.disabled = true;
+          statusEl.hidden = false;
+          statusEl.textContent = "Generating synthetic flight…";
+          try {
+            const res = await fetch("/api/drone/demo/synthetic", { method: "POST" });
+            if (!res.ok) throw new Error(`Server returned ${res.status}`);
+            const { flight } = await res.json();
+            const s = flight.summary || {};
+            blockName.textContent = flight.blockName || "Synthetic block";
+            meta.textContent = `${flight.id} · ${new Date(flight.flownAt || Date.now()).toLocaleString()}`;
+            sprayAcres.textContent = (s.sprayAcres ?? 0).toFixed(1);
+            scoutAcres.textContent = (s.scoutAcres ?? 0).toFixed(1);
+            skipAcres.textContent = (s.skipAcres ?? 0).toFixed(1);
+            savings.textContent = `$${Math.round(s.estimatedSavingsUsd ?? 0)}`;
+            downloads.innerHTML = "";
+            const links = [
+              { href: `/api/drone/flight/${flight.id}/export/pdf`, label: "PDF report" },
+              { href: `/api/drone/flight/${flight.id}/export/kml`, label: "KML" },
+              { href: `/api/drone/flight/${flight.id}/export/geojson`, label: "GeoJSON" },
+              { href: `/api/drone/flight/${flight.id}/overlay.png`, label: "Overlay PNG" }
+            ];
+            for (const link of links) {
+              const a = document.createElement("a");
+              a.href = link.href;
+              a.target = "_blank";
+              a.rel = "noopener";
+              a.className = "ghost-button compact";
+              a.textContent = link.label;
+              downloads.appendChild(a);
+            }
+            result.hidden = false;
+            statusEl.hidden = true;
+          } catch (err) {
+            statusEl.textContent = `Could not generate sample: ${err.message}`;
+          } finally {
+            button.disabled = false;
+          }
+        });
+      })();
+
+      // Audit signup form.
+      (function () {
+        const form = document.getElementById("auditForm");
+        const thanks = document.getElementById("auditThanks");
+        const status = document.getElementById("auditStatus");
+        const submit = document.getElementById("auditSubmit");
+        const ref = document.getElementById("auditReference");
+        if (!form) return;
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          status.textContent = "";
+          submit.disabled = true;
+          const data = Object.fromEntries(new FormData(form).entries());
+          try {
+            const res = await fetch("/api/audit/signup", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(data)
+            });
+            const payload = await res.json();
+            if (!res.ok) {
+              status.textContent = payload.error || `Submit failed (${res.status})`;
+              submit.disabled = false;
+              return;
+            }
+            form.hidden = true;
+            thanks.hidden = false;
+            ref.textContent = payload.id || "—";
+            thanks.scrollIntoView({ behavior: "smooth", block: "center" });
+          } catch (err) {
+            status.textContent = `Network error: ${err.message}`;
+            submit.disabled = false;
+          }
+        });
+      })();
+    </script>
   </body>
 </html>

@@ -6,3 +6,4 @@ coverage/
 *.log
 .gstack/
 .gbrain-source
+data/audit-signups.jsonl

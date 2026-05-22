@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="DrCrop turns drone images into pesticide saving spray/no-spray maps, helping growers treat only the acres that need it and prove yield was not hurt." />
+    <meta name="theme-color" content="#2f6f47" />
+    <title>DrCrop — Drone-to-spray maps for low-pesticide farms</title>
+    <link rel="preconnect" href="https://rsms.me/" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2c3 4 4 7 4 10a4 4 0 0 1-8 0c0-3 1-6 4-10Zm-7 13c1 5 4 7 7 7s6-2 7-7c-3 1-5 3-7 5-2-2-4-4-7-5Z"/></svg>
+        </span>
+        <span class="brand-name">DrCrop</span>
+        <span class="brand-tag">Crop Doctor Memory</span>
+      </a>
+      <div class="status-strip">
+        <span id="gbrainStatus" class="status-pill">Checking GBrain</span>
+        <span id="retrievalStatus" class="status-pill">Checking retrieval</span>
+        <span id="agronomistStatus" class="status-pill">Checking Claude</span>
+      </div>
+      <div class="topnav-actions">
+        <a class="ghost-button" href="https://github.com/Evode-Manirahari/DrCrop" target="_blank" rel="noopener">Source</a>
+        <a class="primary-button compact" href="#console">Open console</a>
+      </div>
+    </nav>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">AI agronomist · live on a Sonoma County farm</p>
+            <h1>Stop spraying 80 acres for a 3-acre outbreak.</h1>
+            <blockquote class="wedge">
+              <span class="wedge-mark" aria-hidden="true">“</span>
+              <p>Farmers do not just need detection. They need <em>memory</em>.</p>
+            </blockquote>
+            <p class="hero-sub">A Sonoma strawberry grower told us he sprays far beyond the affected block because he cannot see whether pests are spreading. DrCrop turns scout reports today, and drone or field-camera evidence tomorrow, into GBrain memory across crop, pest, location, time, and conditions. Then the AI agronomist returns a biological-first plan: where to scout, what to treat, and which acres to leave alone. Fewer unnecessary sprays means lower residue risk on food.</p>
+            <div class="hero-cta">
+              <a class="primary-button" href="#console">Brief the agronomist</a>
+              <a class="ghost-button" href="https://github.com/Evode-Manirahari/DrCrop" target="_blank" rel="noopener">Source on GitHub</a>
+            </div>
+            <p class="hero-meta">Built on <a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a> + <a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a> · context retrieval by <a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a> · agronomist powered by Claude Sonnet 4.6 · written for <a href="https://www.ycombinator.com/rfs" target="_blank" rel="noopener">Garry Tan's RFS for low-pesticide agriculture</a></p>
+          </div>
+          <aside class="hero-impact" aria-label="Live farm impact">
+            <p class="eyebrow">Live on this farm right now</p>
+            <p class="impact-line"><span id="heroAvoidedAcres" class="impact-number">—</span><span class="impact-unit">acres</span></p>
+            <p class="impact-caption">of unnecessary spray avoided today.<br /><strong>Up to 90% less spray, lower residue risk.</strong></p>
+            <dl class="impact-meta">
+              <div><dt>Targeted</dt><dd><span id="heroTargetedAcres">—</span> ac</dd></div>
+              <div><dt>Active outbreaks</dt><dd><span id="heroActiveOutbreaks">—</span></dd></div>
+              <div><dt>Memory confidence</dt><dd><span id="heroConfidence">—</span></dd></div>
+            </dl>
+          </aside>
+        </div>
+      </section>
+
+      <section id="drone" class="drone-section">
+        <div class="drone-head">
+          <div>
+            <p class="eyebrow">Drone-to-Spray · NorCal vineyards</p>
+            <h2>One flight tells you where to spray, scout, and skip.</h2>
+            <p class="drone-lede"><strong>DrCrop turns drone images into pesticide saving spray/no-spray maps, helping growers treat only the acres that need it and prove yield was not hurt.</strong></p>
+            <p class="drone-sub">Upload an orthomosaic, get a red/yellow/green prescription map plus a PDF for the grower and KML/GeoJSON for the applicator. Re-fly to verify chemical savings. This panel runs the full pipeline on a synthetic Sonoma vineyard so you can see the artifact before any real flight.</p>
+          </div>
+          <div class="drone-head-actions">
+            <button id="droneRunButton" class="primary-button" type="button">Run synthetic flight</button>
+          </div>
+        </div>
+
+        <div id="droneEmpty" class="drone-empty">
+          <p>No flight yet. Press <strong>Run synthetic flight</strong> to generate a 5.5-acre Sonoma vineyard block, run ExG + row-mask + zoning, and produce all three exports.</p>
+        </div>
+
+        <div id="droneResult" class="drone-result" hidden>
+          <header class="drone-result-head">
+            <div>
+              <h3 id="droneBlockName">Block</h3>
+              <p id="droneFlightMeta" class="muted-text"></p>
+            </div>
+            <div id="droneDownloads" class="drone-downloads"></div>
+          </header>
+
+          <div class="drone-stats">
+            <article class="drone-stat drone-stat-total"><span>Total mapped</span><strong id="droneTotalAcres">—</strong><em>acres</em></article>
+            <article class="drone-stat drone-stat-red"><span>Spray (red)</span><strong id="droneSprayAcres">—</strong><em>acres</em></article>
+            <article class="drone-stat drone-stat-yellow"><span>Scout (yellow)</span><strong id="droneScoutAcres">—</strong><em>acres</em></article>
+            <article class="drone-stat drone-stat-green"><span>Skip (green)</span><strong id="droneSkipAcres">—</strong><em>acres</em></article>
+            <article class="drone-stat drone-stat-savings"><span>Est. savings</span><strong id="droneSavings">—</strong><em>USD this pass</em></article>
+            <article class="drone-stat drone-stat-avoid"><span>Sprayed-acres avoided</span><strong id="droneAvoidedPct">—</strong><em>%</em></article>
+          </div>
+
+          <div class="drone-viewer">
+            <figure class="drone-figure">
+              <figcaption>Ortho with zone overlay</figcaption>
+              <img id="droneOverlayImg" alt="Prescription overlay over orthomosaic" />
+            </figure>
+            <figure class="drone-figure">
+              <figcaption>Raw orthomosaic</figcaption>
+              <img id="droneOrthoImg" alt="Raw orthomosaic" />
+            </figure>
+          </div>
+
+          <details class="drone-zones">
+            <summary>Per-zone breakdown</summary>
+            <table>
+              <thead>
+                <tr><th>Zone</th><th>Recommendation</th><th>Weed density</th><th>Acres</th><th>Est. saved</th></tr>
+              </thead>
+              <tbody id="droneZoneRows"></tbody>
+            </table>
+          </details>
+        </div>
+      </section>
+
+      <section class="how">
+        <p class="how-lede">Three steps. Every observation. Every block. One connected memory.</p>
+        <ol class="how-steps">
+          <li>
+            <span class="how-step-num">1</span>
+            <h3>An observation lands</h3>
+            <p>Human scout today. Drone, phone photo, or field camera tomorrow. All the same shape: crop, pest, zone, severity, time, symptoms.</p>
+          </li>
+          <li>
+            <span class="how-step-num">2</span>
+            <h3>GBrain connects the dots</h3>
+            <p>Typed edges link the new report to nearby blocks, recent outbreaks, matching pest profiles, and the wind-aligned spread path.</p>
+          </li>
+          <li>
+            <span class="how-step-num">3</span>
+            <h3>The AI agronomist recommends action</h3>
+            <p>Scout first. Use biological controls when they fit. Escalate to chemicals only if scouting confirms the threshold.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section id="console" class="console">
+        <div class="console-head">
+          <div>
+            <p class="eyebrow">Live console</p>
+            <h2 id="farmName">Farm memory</h2>
+            <p class="console-sub"><span id="farmLocation" class="muted-text">Sonoma County</span> · scout it like your farm</p>
+          </div>
+          <div class="console-head-actions">
+            <button id="refreshButton" class="icon-button" type="button" title="Refresh data">Refresh</button>
+            <button id="resetDemoButton" class="icon-button" type="button" title="Reset demo data">Reset demo</button>
+          </div>
+        </div>
+
+        <section class="metrics" aria-label="Farm summary">
+          <article class="metric">
+            <span>Active outbreaks</span>
+            <strong id="activeOutbreaks">0</strong>
+          </article>
+          <article class="metric">
+            <span>Targeted acres</span>
+            <strong id="targetedAcres">0</strong>
+          </article>
+          <article class="metric metric-hero">
+            <span>Spray acres avoided</span>
+            <strong id="avoidedAcres">0</strong>
+          </article>
+          <article class="metric">
+            <span>Memory confidence</span>
+            <strong id="confidence">0%</strong>
+          </article>
+        </section>
+
+        <section class="workspace">
+          <section class="panel map-panel" aria-label="Field memory map">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Live blocks</p>
+                <h2>Field map</h2>
+              </div>
+            </div>
+            <div id="fieldMap" class="field-map"></div>
+            <p class="panel-foot">Click a marker to load that observation into the action plan.</p>
+          </section>
+
+          <section class="panel intake-panel" aria-label="Observation intake">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">New scout report</p>
+                <h2>Observation</h2>
+              </div>
+            </div>
+            <form id="observationForm" class="intake-form">
+              <label>
+                Field
+                <select id="fieldId" name="fieldId"></select>
+              </label>
+              <label>
+                Zone
+                <select id="zoneName" name="zoneName"></select>
+              </label>
+              <label>
+                Issue
+                <select id="issue" name="issue">
+                  <option>Aphids</option>
+                  <option>Leaf curling</option>
+                  <option>Powdery mildew</option>
+                  <option>Spider mites</option>
+                </select>
+              </label>
+              <div class="inline-fields">
+                <label>
+                  Severity
+                  <input id="severity" name="severity" type="range" min="1" max="5" value="3" />
+                  <span id="severityValue" class="range-value">3</span>
+                </label>
+                <label>
+                  Acres
+                  <input id="acres" name="acres" type="number" min="0.1" max="80" step="0.1" value="1.2" />
+                </label>
+              </div>
+              <label>
+                Wind direction (°)
+                <input id="windDirectionDeg" name="windDirectionDeg" type="number" min="0" max="359" value="225" />
+              </label>
+              <label>
+                Symptoms
+                <textarea id="symptoms" name="symptoms" rows="4" placeholder="Describe what the scout sees in the field. Auto-filled per issue; edit freely.">Aphid colonies on new growth with light honeydew.</textarea>
+              </label>
+              <button id="submitButton" class="primary-button" type="submit">Submit report</button>
+            </form>
+          </section>
+        </section>
+
+        <section class="panel briefing-panel" aria-label="AI agronomist briefing">
+          <div class="briefing-head">
+            <div class="briefing-title">
+              <span class="live-dot" aria-hidden="true"></span>
+              <p class="eyebrow accent">Live AI briefing</p>
+              <h2 id="briefingHeadline">Targeted action plan</h2>
+            </div>
+            <div class="briefing-actions">
+              <span id="briefingRisk" class="risk-badge">Moderate</span>
+              <button id="briefingButton" class="primary-button compact" type="button">Generate briefing</button>
+            </div>
+          </div>
+          <p id="briefingText" class="briefing-text">Press Generate briefing to ask the Claude-powered agronomist for a plain-English plan grounded in the memory graph.</p>
+          <div class="briefing-foot">
+            <span id="briefingMeta" class="briefing-meta"></span>
+            <button id="briefingCopy" class="ghost-button compact" type="button" title="Copy briefing">Copy</button>
+          </div>
+        </section>
+
+        <section class="lower-grid">
+          <section class="panel plan-panel" aria-label="Action plan">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Action plan</p>
+                <h2 id="planTitle">Recommendations</h2>
+              </div>
+            </div>
+            <p id="planHeadline" class="plan-headline"></p>
+            <ol id="recommendations" class="recommendations"></ol>
+            <div id="relatedMemory" class="related-memory"></div>
+          </section>
+
+          <section class="panel graph-panel" aria-label="Knowledge graph">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">GBrain shape</p>
+                <h2>Memory graph</h2>
+              </div>
+            </div>
+            <div id="graphView" class="graph-view"></div>
+            <form id="memorySearch" class="memory-search">
+              <input id="memoryQuery" name="memoryQuery" value="drcrop aphids strawberry" />
+              <button type="submit">Retrieve</button>
+            </form>
+            <pre id="memoryOutput" class="memory-output"></pre>
+          </section>
+
+          <section class="panel timeline-panel" aria-label="Observation timeline">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Reports</p>
+                <h2>Timeline</h2>
+              </div>
+            </div>
+            <div id="timeline" class="timeline"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <footer class="sitefoot">
+      <div class="sitefoot-grid">
+        <div>
+          <p class="eyebrow">Crop Doctor Memory</p>
+          <p class="footnote">Shared outbreak memory for specialty-crop growers. Built in 12 hours for the GStack × GBrain hackathon, San Francisco.</p>
+        </div>
+        <div>
+          <p class="eyebrow">Stack</p>
+          <ul class="footlist">
+            <li><a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">GStack</a> - agent operating layer</li>
+            <li><a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">GBrain</a> - memory graph</li>
+            <li><a href="https://docs.zeroentropy.dev/" target="_blank" rel="noopener">ZeroEntropy</a> - context rerank</li>
+            <li>Anthropic Claude Sonnet 4.6 - agronomist voice</li>
+            <li>Fly.io - hosted at <a href="https://drcrop-demo.fly.dev" target="_blank" rel="noopener">drcrop-demo.fly.dev</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow">Repo</p>
+          <ul class="footlist">
+            <li><a href="https://github.com/Evode-Manirahari/DrCrop" target="_blank" rel="noopener">github.com/Evode-Manirahari/DrCrop</a></li>
+            <li><a href="https://github.com/Evode-Manirahari/DrCrop/pull/1" target="_blank" rel="noopener">Pull request #1 (merged)</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footnote tight">© 2026 Evode Manirahari · "Working code or GTFO."</p>
+    </footer>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
