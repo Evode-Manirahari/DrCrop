@@ -81,6 +81,7 @@ async function recordAuditSignup(payload, options = {}) {
   const logger = options.logger || console;
   const clock = options.now;
   const rng = options.rand;
+  const notify = options.notify;
   if (!signupsPath) throw new Error("recordAuditSignup requires options.signupsPath");
 
   const signup = buildSignup(payload, { now: clock, rand: rng });
@@ -90,6 +91,13 @@ async function recordAuditSignup(payload, options = {}) {
   logger.log(
     `[audit-signup] ${signup.id} ${signup.vineyard} (${signup.county}, ${signup.blockAcres}ac) <${redactEmail(signup.email)}>`
   );
+
+  if (typeof notify === "function") {
+    // Fire-and-forget so a Resend outage doesn't 500 the signup request.
+    Promise.resolve()
+      .then(() => notify(signup))
+      .catch((error) => logger.warn(`[audit-signup] notify failed: ${error.message}`));
+  }
 
   return { ok: true, id: signup.id };
 }
