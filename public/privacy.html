@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="DrCrop privacy notice — what we collect, what we don't, who we share with (no one)." />
+    <meta name="theme-color" content="#2f6f47" />
+    <title>Privacy — DrCrop</title>
+    <link rel="preconnect" href="https://rsms.me/" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="grower-page">
+    <nav class="topnav">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2c3 4 4 7 4 10a4 4 0 0 1-8 0c0-3 1-6 4-10Zm-7 13c1 5 4 7 7 7s6-2 7-7c-3 1-5 3-7 5-2-2-4-4-7-5Z"/></svg>
+        </span>
+        <span class="brand-name">DrCrop</span>
+      </a>
+      <div class="topnav-links">
+        <a href="/#how">How it works</a>
+        <a href="/#sample">Sample report</a>
+        <a href="/#pricing">Pricing</a>
+        <a href="/demo">See the demo</a>
+      </div>
+      <div class="topnav-actions">
+        <a class="primary-button compact" href="/#audit">Book a free audit</a>
+      </div>
+    </nav>
+
+    <main class="legal">
+      <article>
+        <p class="eyebrow">Privacy</p>
+        <h1>What we collect and how we use it.</h1>
+        <p class="legal-updated">Effective 2026-05-22.</p>
+
+        <h2>The short version</h2>
+        <ul>
+          <li>We collect what you give us through the audit signup form: name, vineyard, email, phone, county, block acres, current herbicide program, fly window, notes.</li>
+          <li>We use it to contact you about the audit you requested. That's it.</li>
+          <li>We do not sell, rent, or share your contact info with anyone.</li>
+          <li>You own the imagery and prescription maps we produce from your block. We keep a copy so we can re-fly and verify savings.</li>
+          <li>You can ask us to delete everything we have on you. Email <a href="mailto:privacy@drcrop.example">privacy@drcrop.example</a> and we'll do it within 14 days.</li>
+        </ul>
+
+        <h2>What we collect</h2>
+        <p><strong>From the audit form:</strong> name, role, vineyard name, county, block acres, current under-vine herbicide program, email, phone, preferred fly window, and any notes you add. We also capture the user-agent string your browser sends, which is used only for debugging and abuse prevention.</p>
+        <p><strong>From the flight itself:</strong> orthomosaic imagery of the block you authorize us to fly, the field boundary you provide, and the prescription map we produce. We store these so we can re-fly the same block for verification.</p>
+        <p><strong>Not collected:</strong> we do not run analytics, set advertising cookies, or fingerprint your device. There is no third-party tracking script on this site.</p>
+
+        <h2>How we use it</h2>
+        <ul>
+          <li>To contact you about the audit you requested.</li>
+          <li>To deliver the prescription map and verification report.</li>
+          <li>To improve the underlying segmentation model — only your imagery, never your contact info, and only when we have a written data-use agreement with you for the season.</li>
+        </ul>
+
+        <h2>Who we share it with</h2>
+        <p>We share <em>your imagery and prescription map</em> with one party: the California-licensed PCA who reviews and signs your prescription. The PCA is bound by their own professional confidentiality obligations.</p>
+        <p>We share <em>your contact info</em> with no one. No vendors, no marketing partners, no investors. Internal use only.</p>
+        <p>Two narrow exceptions we hope never apply: (1) if we're legally compelled by a subpoena or court order, and (2) if you explicitly ask us to (for example, "send my prescription map to my applicator").</p>
+
+        <h2>How we store it</h2>
+        <p>Audit signups are stored in a single append-only file on our server (`data/audit-signups.jsonl`). Imagery is stored in object storage with access limited to DrCrop staff and the assigned PCA. We don't encrypt-at-rest yet because we're a one-person shop — that changes when we scale past 10 paying customers.</p>
+
+        <h2>How long we keep it</h2>
+        <p>Signup info: indefinitely, unless you ask us to delete it. Imagery: for the duration of our engagement plus 24 months, so we can compare against future flights. We delete imagery sooner on request.</p>
+
+        <h2>Your rights</h2>
+        <ul>
+          <li><strong>Access:</strong> ask what we have on you, we'll send the full record within 14 days.</li>
+          <li><strong>Correction:</strong> tell us what's wrong, we fix it.</li>
+          <li><strong>Deletion:</strong> ask us to delete everything, we do it within 14 days. (Some accounting records may survive if we've sent you an invoice — California tax requirements.)</li>
+          <li><strong>Portability:</strong> we'll export your data as JSON if you ask.</li>
+        </ul>
+        <p>Email <a href="mailto:privacy@drcrop.example">privacy@drcrop.example</a> for any of these. California residents have additional CCPA rights — same email, same response window.</p>
+
+        <h2>Changes</h2>
+        <p>If we change this notice in a way that affects how we use your data, we'll email you before the change takes effect. Cosmetic changes don't trigger an email.</p>
+
+        <h2>Contact</h2>
+        <p>Questions: <a href="mailto:privacy@drcrop.example">privacy@drcrop.example</a>. Real person, single inbox, replies within 2 business days.</p>
+
+        <p class="legal-foot"><a href="/terms">Terms of use</a> · <a href="/">Back to home</a></p>
+      </article>
+    </main>
+
+    <footer class="sitefoot">
+      <div class="sitefoot-grid">
+        <div>
+          <p class="eyebrow">DrCrop</p>
+          <p class="footnote">Verified spray savings for specialty-crop growers. Pilot program now booking NorCal vineyards for the 2026 season.</p>
+        </div>
+        <div>
+          <p class="eyebrow">Site</p>
+          <ul class="footlist">
+            <li><a href="/">Home</a></li>
+            <li><a href="/demo">Demo console</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+            <li><a href="/terms">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow">Repo</p>
+          <ul class="footlist">
+            <li><a href="https://github.com/Evode-Manirahari/DrCrop" target="_blank" rel="noopener">github.com/Evode-Manirahari/DrCrop</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footnote tight">© 2026 Evode Manirahari · NorCal vineyards only · decision-support, not a regulated recommendation</p>
+    </footer>
+  </body>
+</html>

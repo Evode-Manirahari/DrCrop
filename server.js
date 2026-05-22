@@ -10,6 +10,7 @@ const zeroEntropy = require("./src/zeroEntropyAdapter");
 const agronomistAgent = require("./src/agronomistAgent");
 const drone = require("./src/droneToSpray");
 const auditSignup = require("./src/auditSignup");
+const notifier = require("./src/notifier");
 
 const root = __dirname;
 const publicDir = path.join(root, "public");
@@ -286,7 +287,10 @@ async function handleApi(req, res, url) {
   if (req.method === "POST" && url.pathname === "/api/audit/signup") {
     const payload = await readBody(req);
     payload.userAgent = req.headers["user-agent"] || "";
-    sendJson(res, 201, await auditSignup.recordAuditSignup(payload, { signupsPath: auditSignupsPath }));
+    sendJson(res, 201, await auditSignup.recordAuditSignup(payload, {
+      signupsPath: auditSignupsPath,
+      notify: notifier.notifyNewSignup
+    }));
     return true;
   }
 

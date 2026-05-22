@@ -58,9 +58,22 @@ npm test
 
 `POST /api/audit/signup` validates + appends one lead per line to
 `data/audit-signups.jsonl`. Required: `name`, `vineyard`, `county` (must
-be in `AUDIT_COUNTIES`), `blockAcres`, `email`. UA captured from headers.
-File is gitignored. No email notification yet — `tail -f` in dev; wire
-SMTP / Resend once leads arrive (see `docs/ops-prereqs.md`).
+be in `AUDIT_COUNTIES`), `blockAcres` (rejected if outside 0.5–1000, not
+clamped), `email`. UA captured from headers. The log line redacts email
+to `first-char***@domain`. File is gitignored.
+
+Email notification (opt-in) goes through `src/notifier.js` via Resend.
+Set both `RESEND_API_KEY` and `DRCROP_LEAD_NOTIFY_EMAIL` to enable; the
+notifier is fire-and-forget so a Resend outage cannot 500 the signup.
+Optional `DRCROP_LEAD_NOTIFY_FROM` overrides the sender (default uses
+`onboarding@resend.dev`, which works on Resend's free tier without DNS).
+
+## Legal pages
+
+`public/privacy.html` and `public/terms.html` are static and served at
+`/privacy` and `/terms` via the extensionless-path resolver in
+`safeStaticPath`. Both are written as honest plain-language pages —
+edit them as the product changes, not as legal moves.
 
 ## Product Bar
 
