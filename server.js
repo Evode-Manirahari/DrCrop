@@ -171,6 +171,53 @@ async function createObservation(payload) {
   };
 }
 
+const auditSignupsPath = path.join(root, "data", "audit-signups.jsonl");
+const AUDIT_COUNTIES = new Set([
+  "Napa",
+  "Sonoma",
+  "Mendocino",
+  "Lake",
+  "Marin",
+  "Solano",
+  "Other (NorCal)"
+]);
+
+async function recordAuditSignup(payload) {
+  const name = cleanString(payload.name);
+  const vineyard = cleanString(payload.vineyard);
+  const email = cleanString(payload.email).toLowerCase();
+  const blockAcres = clampNumber(payload.blockAcres, 0.5, 1000, NaN);
+  const county = cleanString(payload.county);
+
+  if (!name || name.length < 2) throw routeError("Please share your name so we can follow up.");
+  if (!vineyard) throw routeError("Tell us which vineyard you're with.");
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw routeError("That email doesn't look right — please double-check.");
+  if (!AUDIT_COUNTIES.has(county)) throw routeError("Pick a Northern California county from the list.");
+  if (!Number.isFinite(blockAcres)) throw routeError("Block acres should be a number between 0.5 and 1000.");
+
+  const signup = {
+    id: `aud-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+    receivedAt: new Date().toISOString(),
+    name,
+    role: cleanString(payload.role),
+    vineyard,
+    county,
+    blockAcres,
+    herbicideProgram: cleanString(payload.herbicideProgram),
+    email,
+    phone: cleanString(payload.phone),
+    flyWindow: cleanString(payload.flyWindow),
+    notes: cleanString(payload.notes),
+    userAgent: cleanString(payload.userAgent)
+  };
+
+  await fs.mkdir(path.dirname(auditSignupsPath), { recursive: true });
+  await fs.appendFile(auditSignupsPath, `${JSON.stringify(signup)}\n`, "utf8");
+  console.log(`[audit-signup] ${signup.id} ${signup.vineyard} (${signup.county}, ${signup.blockAcres}ac) <${signup.email}>`);
+
+  return { ok: true, id: signup.id };
+}
+
 const gbrainQueue = new Map();
 const MAX_GBRAIN_QUEUE_ENTRIES = 100;
 
@@ -277,6 +324,13 @@ async function handleApi(req, res, url) {
     const query = url.searchParams.get("q") || "strawberry aphids nearby leaf curling";
     const observations = await loadObservations();
     sendJson(res, 200, await zeroEntropy.rerankObservationMemory(query, observations, { topN: 5 }));
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/audit/signup") {
+    const payload = await readBody(req);
+    payload.userAgent = req.headers["user-agent"] || "";
+    sendJson(res, 201, await recordAuditSignup(payload));
     return true;
   }
 
@@ -418,7 +472,12 @@ async function handleDroneApi(req, res, url) {
 }
 
 function safeStaticPath(urlPathname) {
-  const requested = urlPathname === "/" ? "/index.html" : urlPathname;
+  let requested = urlPathname === "/" ? "/index.html" : urlPathname;
+  // Map clean URLs like /demo → /demo.html so the marketing page and demo
+  // console can live side-by-side without an SPA router.
+  if (!path.extname(requested) && !requested.endsWith("/")) {
+    requested = `${requested}.html`;
+  }
   const decoded = decodeURIComponent(requested);
   const resolved = path.resolve(publicDir, `.${decoded}`);
   if (!resolved.startsWith(publicDir)) return null;

@@ -1,9 +1,10 @@
 # DrCrop Agent Notes
 
-Now two layers in one repo:
+Three layers in one repo:
 
-- **Drone-to-Spray** (`src/droneToSpray/`) — the current product direction. Drone ortho → ExG → row-aware mask → red/yellow/green zones → PDF/KML/GeoJSON. Synthetic-only today; real ortho intake next.
-- **Crop Doctor Memory** (`src/riskEngine.js`, `src/agronomistAgent.js`, `src/gbrainAdapter.js`, `src/zeroEntropyAdapter.js`) — hackathon scout console kept as the verification + briefing layer.
+- **Grower funnel** (`public/index.html` at `/`) — public marketing + lead-capture surface. Free-audit signup posts to `/api/audit/signup`; leads land in `data/audit-signups.jsonl` (gitignored). See `docs/outreach/` for outbound and `docs/ops-prereqs.md` for what must be true before the funnel is promoted publicly.
+- **Drone-to-Spray** (`src/droneToSpray/`) — the product. Drone ortho → ExG → row-aware mask → red/yellow/green zones → PDF/KML/GeoJSON. Synthetic-only today; real ortho intake next.
+- **Demo console** (`public/demo.html` at `/demo`) — hackathon-era scout console. Kept as the live demo growers and PCAs click through, and as the verification + briefing layer over the drone pipeline.
 
 Zero-dependency stance still holds for the drone module: PNG/PDF/KML/GeoJSON are all hand-rolled on Node's `zlib`. Add a dep only if it clearly buys speed without breaking the demo.
 
@@ -32,8 +33,12 @@ npm test
 - `src/riskEngine.js`: deterministic outbreak relationship scoring and treatment plan generation.
 - `src/gbrainAdapter.js`: best-effort GBrain CLI writes and typed links.
 - `src/zeroEntropyAdapter.js`: optional ZeroEntropy reranking via `ZEROENTROPY_API_KEY`.
-- `public/`: grower-facing console + drone-to-spray panel (`#drone` section).
-- `data/`: seed farm and observations for the memory layer.
+- `public/index.html`: grower funnel (hero, how-it-works, sample report, pricing, audit signup). Inline JS only.
+- `public/demo.html`: demo console + drone-to-spray panel (`#drone` section). Served at `/demo`. Loads `/app.js`.
+- `public/styles.css`: shared. Grower-funnel styles live in a clearly marked section at the bottom.
+- `data/`: seed farm + observations for the memory layer. Lead capture appends to `data/audit-signups.jsonl` (gitignored).
+- `docs/outreach/`: ICP target list, cold-email templates, PCA recruiting playbook. Sales motion, not code.
+- `docs/ops-prereqs.md`: hard/soft blockers before the funnel goes live (Part 107, PCA partner, insurance, etc).
 
 ## Drone-to-Spray endpoints
 
@@ -49,9 +54,21 @@ npm test
 | `GET /api/drone/flight/:id/export/geojson` | GeoJSON FeatureCollection. |
 | `POST /api/drone/verify` | `{ beforeId, afterId }` → before/after diff. |
 
+## Audit signup endpoint
+
+`POST /api/audit/signup` validates + appends one lead per line to
+`data/audit-signups.jsonl`. Required: `name`, `vineyard`, `county` (must
+be in `AUDIT_COUNTIES`), `blockAcres`, `email`. UA captured from headers.
+File is gitignored. No email notification yet — `tail -f` in dev; wire
+SMTP / Resend once leads arrive (see `docs/ops-prereqs.md`).
+
 ## Product Bar
 
-The drone-to-spray panel is the new top-of-funnel: a grower or PCA should be able to press one button and see the artifact (overlay + acres + $ saved + downloads). The scout console below it remains the usable grower workflow for outbreak memory. Neither screen is a marketing landing page.
+`/` is the public marketing surface for growers — it must look like a
+real company, not a demo. `/demo` is the working console used to *show*
+how the pipeline produces an artifact. Keep the two surfaces separate;
+do not let demo-grade affordances (status pills, reset-demo buttons,
+hackathon credits in the hero) leak back to `/`.
 
 ## GBrain Search Guidance (configured by /sync-gbrain)
 <!-- gstack-gbrain-search-guidance:start -->
